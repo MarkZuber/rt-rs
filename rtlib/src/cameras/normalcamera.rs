@@ -1,7 +1,7 @@
 use crate::cameras::Camera;
+use crate::get_random_in_unit_sphere;
 use crate::render::Ray;
-use crate::{vec3, InnerSpace, Vector3};
-use rand::{thread_rng, Rng};
+use crate::{InnerSpace, Vector3};
 
 pub struct NormalCamera {
     origin: Vector3<f32>,
@@ -11,25 +11,6 @@ pub struct NormalCamera {
     u: Vector3<f32>,
     v: Vector3<f32>,
     lens_radius: f32,
-}
-
-fn to_unit_vector(v: Vector3<f32>) -> Vector3<f32> {
-    v / v.magnitude()
-}
-
-fn get_random_in_unit_sphere() -> Vector3<f32> {
-    let mut pv: Vector3<f32>;
-    let mut rng = thread_rng();
-
-    loop {
-        pv = (2.0 * vec3(rng.gen::<f32>(), rng.gen::<f32>(), rng.gen::<f32>()))
-            - vec3(1.0, 1.0, 1.0);
-        if pv.magnitude2() < 1.0 {
-            break;
-        }
-    }
-
-    pv
 }
 
 impl NormalCamera {
@@ -47,8 +28,8 @@ impl NormalCamera {
         let half_height = (theta / 2.0).tan();
         let half_width = aspect * half_height;
         let origin = look_from;
-        let w = to_unit_vector(look_from - look_at);
-        let u = to_unit_vector(up.cross(w));
+        let w = (look_from - look_at).normalize();
+        let u = (up.cross(w)).normalize();
         let v = w.cross(u);
         let lower_left_corner = origin
             - (half_width * focus_distance * u)

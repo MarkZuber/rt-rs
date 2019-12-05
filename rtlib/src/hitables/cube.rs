@@ -6,8 +6,8 @@ use crate::Vector3;
 use std::sync::Arc;
 
 pub struct Cube {
-    pos_min: Vector3<f32>,
-    pos_max: Vector3<f32>,
+    _pos_min: Vector3<f32>,
+    _pos_max: Vector3<f32>,
     list: ThreadHitable,
 }
 
@@ -22,8 +22,8 @@ impl Cube {
             FlipNormals::new(YzRect::new(p0.y, p1.y, p0.z, p1.z, p1.x, material_id)),
         ]);
         Arc::new(Box::new(Cube {
-            pos_min: p0,
-            pos_max: p1,
+            _pos_min: p0,
+            _pos_max: p1,
             list: list,
         }))
     }
@@ -32,6 +32,13 @@ impl Cube {
 impl Hitable for Cube {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
         self.list.hit(ray, t_min, t_max)
+    }
+
+    fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>) -> f32 {
+        self.list.get_pdf_value(origin, v)
+    }
+    fn random(&self, origin: Vector3<f32>) -> Vector3<f32> {
+        self.list.random(origin)
     }
 
     // fn get_bounding_box(&self, t0: f32, t1: f32) -> AABB {

@@ -10,14 +10,18 @@ pub type ThreadMaterial = Arc<Box<dyn Material + Send>>;
 
 pub trait Material: Sync {
     fn scatter(&self, ray_in: &Ray, hit_record: &HitRecord) -> Arc<Box<ScatterResult>>;
-    fn scattering_pdf(&self, ray_in: &Ray, hit_record: &HitRecord, scattered: &Ray) -> f32;
+    fn scattering_pdf(&self, _ray_in: &Ray, _hit_record: &HitRecord, _scattered: &Ray) -> f32 {
+        0.0
+    }
     fn emitted(
         &self,
-        ray_in: &Ray,
-        hit_record: &HitRecord,
-        uv_coords: Point2<f32>,
-        p: Vector3<f32>,
-    ) -> Color;
+        _ray_in: &Ray,
+        _hit_record: &HitRecord,
+        _uv_coords: Point2<f32>,
+        _p: Vector3<f32>,
+    ) -> Color {
+        Color::zero()
+    }
 }
 
 pub struct CompiledMaterial {

@@ -1,6 +1,11 @@
 use rtlib::cameras::{Camera, NormalCamera};
-use rtlib::hitables::{Cube, FlipNormals, HitableList, Sphere, Translate, XyRect, XzRect, YzRect};
-use rtlib::materials::{CompiledMaterials, DiffuseLight, LambertianMaterial};
+use rtlib::hitables::{
+    Cube, FlipNormals, HitableList, RotateY, Sphere, Translate, XyRect, XzRect, YzRect,
+};
+use rtlib::materials::{
+    CompiledMaterials, DialectricMaterial, DiffuseLight, LambertianMaterial, MetalMaterial,
+};
+use rtlib::render::Color;
 use rtlib::render::Scene;
 use rtlib::textures::ColorTexture;
 use rtlib::{vec3, Vector3};
@@ -11,29 +16,27 @@ pub fn create_cornell_box_scene() -> Scene {
 
     let light_material = materials.add(DiffuseLight::new(ColorTexture::new(15.0, 15.0, 15.0)));
 
-    // todo: dialectricmaterial(1.5)
-    let glass = materials.add(LambertianMaterial::new(ColorTexture::new(0.1, 0.1, 0.1)));
+    let glass = materials.add(DialectricMaterial::new(1.5));
     let red = materials.add(LambertianMaterial::new(ColorTexture::new(0.65, 0.05, 0.05)));
     let white = materials.add(LambertianMaterial::new(ColorTexture::new(0.73, 0.73, 0.73)));
     let green = materials.add(LambertianMaterial::new(ColorTexture::new(0.12, 0.45, 0.15)));
-
-    // todo: metalmaterial(color(0.8, 0.85, 0.88), 0.0)
-    // let aluminum = materials.add(LambertianMaterial::new(ColorTexture::new(0.1, 0.1, 0.1)));
-
+    let aluminum = materials.add(MetalMaterial::new(Color::new(0.8, 0.85, 0.88), 0.0));
     let light_rect = XzRect::new(213.0, 343.0, 227.0, 332.0, 554.0, light_material);
 
     let glass_sphere = Sphere::new(vec3(190.0, 90.0, 190.0), 90.0, glass);
 
     let world = HitableList::from_vec(vec![
-        FlipNormals::new(YzRect::new(0.0, 555.0, 0.0, 555.0, 555.0, green)),
+        FlipNormals::new(YzRect::new(0.0, 555.0, 0.0, 555.0, 0.0, green)),
         YzRect::new(0.0, 555.0, 0.0, 555.0, 555.0, red),
         FlipNormals::new(light_rect.clone()),
-        FlipNormals::new(XzRect::new(0.0, 555.0, 0.0, 555.0, 555.0, white)),
+        FlipNormals::new(XzRect::new(0.0, 555.0, 0.0, 555.0, 555.0, white)), // top
         XzRect::new(0.0, 555.0, 0.0, 555.0, 0.0, white),
         FlipNormals::new(XyRect::new(0.0, 555.0, 0.0, 555.0, 555.0, white)),
         Translate::new(
-            /*RotateY::new 15.0 */
-            Cube::new(vec3(0.0, 0.0, 0.0), vec3(165.0, 330.0, 165.0), red),
+            RotateY::new(
+                Cube::new(vec3(0.0, 0.0, 0.0), vec3(165.0, 330.0, 165.0), aluminum),
+                15.0,
+            ),
             vec3(265.0, 0.0, 295.0),
         ),
         glass_sphere,

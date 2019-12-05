@@ -28,3 +28,16 @@ fn random_to_sphere(radius: f32, distance_squared: f32) -> Vector3<f32> {
     let y = phi.sin() * (1.0_f32 - (z * z)).sqrt();
     Vector3 { x, y, z }
 }
+
+fn get_random_in_unit_sphere() -> Vector3<f32> {
+    let mut pv: Vector3<f32>;
+
+    loop {
+        pv = (2.0 * vec3(next_rand_f32(), next_rand_f32(), next_rand_f32())) - vec3(1.0, 1.0, 1.0);
+        if pv.magnitude2() < 1.0 {
+            break;
+        }
+    }
+
+    pv
+}

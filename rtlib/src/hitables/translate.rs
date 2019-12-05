@@ -31,16 +31,23 @@ impl Hitable for Translate {
         }
 
         None
-
-        // fn get_bounding_box(&self, t0: f32, t1: f32) -> AABB {
-        // var box = Hitable.GetBoundingBox(t0, t1);
-        // if (box == null)
-        // {
-        //     return null;
-        // }
-
-        // box = new AABB(box.Min + Displacement, box.Max + Displacement);
-        // return box;
-        // }
     }
+
+    fn random(&self, origin: Vector3<f32>) -> Vector3<f32> {
+        self.hitable.random(origin)
+    }
+
+    fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>) -> f32 {
+        self.hitable.get_pdf_value(origin, v)
+    }
+    // fn get_bounding_box(&self, t0: f32, t1: f32) -> AABB {
+    // var box = Hitable.GetBoundingBox(t0, t1);
+    // if (box == null)
+    // {
+    //     return null;
+    // }
+
+    // box = new AABB(box.Min + Displacement, box.Max + Displacement);
+    // return box;
+    // }
 }

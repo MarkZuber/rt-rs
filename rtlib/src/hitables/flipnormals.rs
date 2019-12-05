@@ -1,5 +1,6 @@
 use crate::hitables::{HitRecord, Hitable, ThreadHitable};
 use crate::render::Ray;
+use crate::Vector3;
 use std::sync::Arc;
 
 pub struct FlipNormals {
@@ -24,6 +25,13 @@ impl Hitable for FlipNormals {
             ));
         }
         None
+    }
+
+    fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>) -> f32 {
+        self.hitable.get_pdf_value(origin, v)
+    }
+    fn random(&self, origin: Vector3<f32>) -> Vector3<f32> {
+        self.hitable.random(origin)
     }
 
     // fn get_bounding_box(&self, t0: f32, t1: f32) -> AABB {

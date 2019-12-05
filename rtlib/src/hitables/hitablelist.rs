@@ -19,10 +19,6 @@ impl HitableList {
         Arc::new(Box::new(HitableList { hitables }))
     }
 
-    // pub fn add(&mut self, hitable: Arc<Box<dyn Hitable + Send>>) {
-    //     self.hitables.push(hitable);
-    // }
-
     pub fn size(&self) -> usize {
         self.hitables.len()
     }
