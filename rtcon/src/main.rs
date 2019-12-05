@@ -10,11 +10,8 @@ fn get_datetime_file_marker() -> String {
 }
 
 fn main() {
-    let foo: Vector3<f32> = vec3(1.0, 2.0, 3.0);
-    println!("Hello, world!  {:?}", foo);
-
     let ray_trace_depth = 50;
-    let num_samples = 100;
+    let num_samples = 300;
 
     let image_width = 500;
     let image_height = 500;

@@ -1,9 +1,10 @@
-use crate::hitables::{HitRecord, Hitable};
+use crate::hitables::{HitRecord, Hitable, ThreadHitable};
 use crate::pdfs::OrthoNormalBase;
 use crate::random_to_sphere;
 use crate::render::Ray;
 use crate::{to_unit_vector, InnerSpace, Point2, Vector3};
 use std::f32;
+use std::sync::Arc;
 
 pub struct Sphere {
     center: Vector3<f32>,
@@ -12,12 +13,12 @@ pub struct Sphere {
 }
 
 impl Sphere {
-    pub fn new(center: Vector3<f32>, radius: f32, material_id: u64) -> Sphere {
-        Sphere {
+    pub fn new(center: Vector3<f32>, radius: f32, material_id: u64) -> ThreadHitable {
+        Arc::new(Box::new(Sphere {
             center: center,
             radius: radius,
             material_id,
-        }
+        }))
     }
 
     pub fn center(&self) -> Vector3<f32> {

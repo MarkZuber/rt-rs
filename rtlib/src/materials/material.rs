@@ -6,6 +6,8 @@ use std::collections::HashMap;
 
 use std::sync::Arc;
 
+pub type ThreadMaterial = Arc<Box<dyn Material + Send>>;
+
 pub trait Material: Sync {
     fn scatter(&self, ray_in: &Ray, hit_record: &HitRecord) -> Arc<Box<ScatterResult>>;
     fn scattering_pdf(&self, ray_in: &Ray, hit_record: &HitRecord, scattered: &Ray) -> f32;
@@ -19,12 +21,12 @@ pub trait Material: Sync {
 }
 
 pub struct CompiledMaterial {
-    pub material: Arc<Box<dyn Material + Send>>,
+    pub material: ThreadMaterial,
     pub id: u64,
 }
 
 impl CompiledMaterial {
-    pub fn new(material: Arc<Box<dyn Material + Send>>, id: u64) -> CompiledMaterial {
+    pub fn new(material: ThreadMaterial, id: u64) -> CompiledMaterial {
         CompiledMaterial { material, id }
     }
 }

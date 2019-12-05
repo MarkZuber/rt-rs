@@ -1,27 +1,22 @@
 use crate::hitables::HitRecord;
-use crate::hitables::Hitable;
+use crate::hitables::{Hitable, ThreadHitable};
 use crate::render::Ray;
 use crate::{vec3, Point2, Vector3};
 use std::sync::Arc;
 
 pub struct HitableList {
-    hitables: Arc<Vec<Arc<Box<dyn Hitable + Send>>>>,
+    hitables: Arc<Vec<ThreadHitable>>,
 }
 
 impl HitableList {
-    pub fn new() -> HitableList {
-        let hitables: Arc<Vec<Arc<Box<dyn Hitable + Send>>>> = Arc::new(Vec::new());
-        HitableList { hitables }
-    }
-
-    pub fn from_vec(items: Vec<Box<dyn Hitable + Send>>) -> HitableList {
-        let mut pre_hitables: Vec<Arc<Box<dyn Hitable + Send>>> = Vec::new();
+    pub fn from_vec(items: Vec<ThreadHitable>) -> ThreadHitable {
+        let mut pre_hitables: Vec<ThreadHitable> = Vec::new();
         for item in items {
-            pre_hitables.push(Arc::new(item));
+            pre_hitables.push(item);
         }
 
         let hitables = Arc::new(pre_hitables);
-        HitableList { hitables }
+        Arc::new(Box::new(HitableList { hitables }))
     }
 
     // pub fn add(&mut self, hitable: Arc<Box<dyn Hitable + Send>>) {

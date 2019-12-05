@@ -1,6 +1,5 @@
 use crate::hitables::HitRecord;
-use crate::materials::Material;
-use crate::materials::ScatterResult;
+use crate::materials::{Material, ScatterResult, ThreadMaterial};
 use crate::pdfs::CosinePdf;
 use crate::render::{Color, Ray};
 use crate::textures::{ColorTexture, Texture};
@@ -13,8 +12,8 @@ pub struct LambertianMaterial {
 }
 
 impl LambertianMaterial {
-    pub fn new(albedo: Arc<Box<ColorTexture>>) -> LambertianMaterial {
-        LambertianMaterial { albedo }
+    pub fn new(albedo: Arc<Box<ColorTexture>>) -> ThreadMaterial {
+        Arc::new(Box::new(LambertianMaterial { albedo }))
     }
 }
 

@@ -35,6 +35,10 @@ impl HitRecord {
         self.p
     }
 
+    pub fn get_t(&self) -> f32 {
+        self.t
+    }
+
     pub fn get_normal(&self) -> Vector3<f32> {
         self.normal
     }

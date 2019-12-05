@@ -8,4 +8,5 @@ pub use self::lambertian::LambertianMaterial;
 pub use self::material::CompiledMaterial;
 pub use self::material::CompiledMaterials;
 pub use self::material::Material;
+pub use self::material::ThreadMaterial;
 pub use self::scatterresult::ScatterResult;

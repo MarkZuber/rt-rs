@@ -9,12 +9,14 @@ pub trait PixelBuffer: Sync {
 #[derive(Debug)]
 pub struct ImagePixelBuffer {
     imgbuf: image::RgbImage,
+    is_y_up: bool,
 }
 
 impl ImagePixelBuffer {
     pub fn new(width: u32, height: u32) -> ImagePixelBuffer {
         ImagePixelBuffer {
             imgbuf: image::RgbImage::new(width, height),
+            is_y_up: true,
         }
     }
 }
@@ -37,6 +39,13 @@ impl ImagePixelBuffer {
     fn f32_to_rgb(val: f32) -> u8 {
         (val * 255.0) as u8
     }
+
+    fn calculate_actual_y(&self, y: u32) -> u32 {
+        if self.is_y_up {
+            return self.get_height() - 1 - y;
+        }
+        y
+    }
 }
 
 impl PixelBuffer for ImagePixelBuffer {
@@ -50,6 +59,6 @@ impl PixelBuffer for ImagePixelBuffer {
 
     fn set_pixel_color(&mut self, x: u32, y: u32, color: Color) {
         let pixel = self.clamp_to_pixel(color);
-        self.imgbuf.put_pixel(x, y, pixel);
+        self.imgbuf.put_pixel(x, self.calculate_actual_y(y), pixel);
     }
 }

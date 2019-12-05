@@ -1,10 +1,9 @@
 use crate::cameras::Camera;
+use crate::next_rand_f32;
 use crate::render::{
     Color, PixelBuffer, RayTracer, RenderConfig, Renderer, SamplingRayTracer, Scene,
 };
 use indicatif::{ProgressBar, ProgressStyle};
-use rand::thread_rng;
-use rand::Rng;
 use rayon::prelude::{IntoParallelIterator, ParallelIterator};
 use std::sync::Arc;
 
@@ -36,17 +35,14 @@ impl Renderer for PerPixelRenderer {
                 let mut color: Color = (0..render_config.num_samples)
                     .into_par_iter()
                     .map(|_sample| {
-                        let mut rng = thread_rng();
                         let scene = the_scene.clone();
 
-                        let u = (x as f32 + rng.gen::<f32>()) / pixel_buffer.get_width() as f32;
-                        let v = (y as f32 + rng.gen::<f32>()) / pixel_buffer.get_height() as f32;
+                        let u = (x as f32 + next_rand_f32()) / pixel_buffer.get_width() as f32;
+                        let v = (y as f32 + next_rand_f32()) / pixel_buffer.get_height() as f32;
 
                         let ray = camera.get_ray(u, v);
 
-                        ray_tracer
-                            .get_ray_color(&ray, scene, render_config, 0)
-                            .apply_gamma()
+                        ray_tracer.get_ray_color(&ray, scene, render_config, 0)
 
                         // ColorVector::new(
                         //     (x as f32) / (pixel_buffer.get_width() as f32),
@@ -55,7 +51,9 @@ impl Renderer for PerPixelRenderer {
                     })
                     .sum();
 
-                color = color.multiply_by_scalar(1.0 / render_config.num_samples as f32);
+                color = color
+                    .multiply_by_scalar(1.0 / (render_config.num_samples as f32))
+                    .apply_gamma();
 
                 pixel_buffer.set_pixel_color(x, y, color)
             }
