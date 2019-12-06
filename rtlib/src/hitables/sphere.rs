@@ -1,8 +1,8 @@
-use crate::hitables::{HitRecord, Hitable, ThreadHitable};
+use crate::hitables::{HitRecord, Hitable, ThreadHitable, AABB};
 use crate::pdfs::OrthoNormalBase;
 use crate::random_to_sphere;
 use crate::render::Ray;
-use crate::{to_unit_vector, InnerSpace, Point2, Vector3};
+use crate::{to_unit_vector, vec3, InnerSpace, Point2, Vector3};
 use std::f32;
 use std::sync::Arc;
 
@@ -84,10 +84,12 @@ impl Hitable for Sphere {
         None
     }
 
-    // fn get_bounding_box(&self, t0: f32, t1: f32) -> AABB {
-    //     // return new AABB(Center - new Vector3(Radius, Radius, Radius), Center + new Vector3(Radius, Radius, Radius));
-    //     AABB {}
-    // }
+    fn get_bounding_box(&self, t0: f32, t1: f32) -> Arc<Box<AABB>> {
+        AABB::new(
+            self.center() - vec3(self.radius(), self.radius(), self.radius()),
+            self.center + vec3(self.radius(), self.radius(), self.radius()),
+        )
+    }
 
     fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>) -> f32 {
         match self.hit(&Ray::new(origin, v), 0.001_f32, f32::MAX) {

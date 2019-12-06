@@ -1,4 +1,4 @@
-use crate::hitables::{HitRecord, Hitable, ThreadHitable};
+use crate::hitables::{HitRecord, Hitable, ThreadHitable, AABB};
 use crate::render::Ray;
 use crate::Vector3;
 use std::sync::Arc;
@@ -40,14 +40,8 @@ impl Hitable for Translate {
     fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>) -> f32 {
         self.hitable.get_pdf_value(origin, v)
     }
-    // fn get_bounding_box(&self, t0: f32, t1: f32) -> AABB {
-    // var box = Hitable.GetBoundingBox(t0, t1);
-    // if (box == null)
-    // {
-    //     return null;
-    // }
-
-    // box = new AABB(box.Min + Displacement, box.Max + Displacement);
-    // return box;
-    // }
+    fn get_bounding_box(&self, t0: f32, t1: f32) -> Arc<Box<AABB>> {
+        let b = self.hitable.get_bounding_box(t0, t1);
+        AABB::new(b.min + self.displacement, b.max + self.displacement)
+    }
 }

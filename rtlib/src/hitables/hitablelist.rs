@@ -1,5 +1,6 @@
 use crate::hitables::HitRecord;
-use crate::hitables::{Hitable, ThreadHitable};
+use crate::hitables::{Hitable, ThreadHitable, AABB};
+use crate::next_rand_f32;
 use crate::render::Ray;
 use crate::{vec3, Point2, Vector3};
 use std::sync::Arc;
@@ -57,15 +58,36 @@ impl Hitable for HitableList {
         return None;
     }
 
-    // fn get_bounding_box(&self, _t0: f32, _t1: f32) -> AABB {
-    //     AABB {}
-    // }
+    fn get_bounding_box(&self, t0: f32, t1: f32) -> Arc<Box<AABB>> {
+        if self.hitables.len() == 0 {
+            return AABB::new_empty();
+        }
 
-    fn get_pdf_value(&self, _origin: Vector3<f32>, _v: Vector3<f32>) -> f32 {
-        0.0
+        let mut b = self.hitables[0].get_bounding_box(t0, t1);
+        for i in 1..self.hitables.len() {
+            let temp_box = self.hitables[i].get_bounding_box(t0, t1);
+            b = b.get_surrounding_box(temp_box);
+        }
+
+        b
     }
 
-    fn random(&self, _origin: Vector3<f32>) -> Vector3<f32> {
-        vec3(0.0, 0.0, 0.0)
+    fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>) -> f32 {
+        let weight = 1.0 / (self.hitables.len() as f32);
+        let mut sum = 0.0;
+        for i in 0..self.hitables.len() {
+            sum += weight * self.hitables[i].get_pdf_value(origin, v);
+        }
+
+        sum
+    }
+
+    fn random(&self, origin: Vector3<f32>) -> Vector3<f32> {
+        let count = self.hitables.len();
+        let index = (next_rand_f32() * (count as f32)).floor() as usize;
+        if index < count {
+            return self.hitables[index].random(origin);
+        }
+        return origin;
     }
 }

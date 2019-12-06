@@ -1,4 +1,4 @@
-use crate::hitables::{HitRecord, Hitable, ThreadHitable};
+use crate::hitables::{to_single_array, HitRecord, Hitable, ThreadHitable, AABB};
 use crate::render::Ray;
 use crate::{vec3, Vector3};
 use std::f32;
@@ -8,7 +8,7 @@ pub struct RotateY {
     hitable: ThreadHitable,
     sin_theta: f32,
     cos_theta: f32,
-    // bounding_box: AABB
+    bounding_box: Arc<Box<AABB>>,
 }
 
 impl RotateY {
@@ -17,53 +17,43 @@ impl RotateY {
         let sin_theta = radians.sin();
         let cos_theta = radians.cos();
 
-        // var box = Hitable.GetBoundingBox(0.0f, 1.0f);
-        // var min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue).ToSingleArray();
-        // var max = new Vector3(-float.MaxValue, -float.MaxValue, -float.MaxValue).ToSingleArray();
+        let b = hitable.get_bounding_box(0.0, 1.0);
+        let mut min = to_single_array(vec3(f32::MAX, f32::MAX, f32::MAX));
+        let mut max = to_single_array(vec3(-f32::MAX, -f32::MAX, -f32::MAX));
 
-        // for (int i = 0; i < 2; i++)
-        // {
-        //     float dubi = Convert.ToSingle(i);
-        //     for (int j = 0; j < 2; j++)
-        //     {
-        //         float dubj = Convert.ToSingle(j);
-        //         for (int k = 0; k < 2; k++)
-        //         {
-        //             float dubk = Convert.ToSingle(k);
-        //             float x = (dubi * box.Max.X) + ((1.0f - dubi) * box.Min.X);
-        //             float y = (dubj * box.Max.Y) + ((1.0f - dubj) * box.Min.Y);
-        //             float z = (dubk * box.Max.Z) + ((1.0f - dubk) * box.Min.Z);
-        //             float newx = (CosTheta * x) + (SinTheta * z);
-        //             float newz = (-SinTheta * x) + (CosTheta * z);
-        //             var tester = new Vector3(newx, y, newz).ToSingleArray();
-        //             for (int c = 0; c < 3; c++)
-        //             {
-        //                 if (tester[c] > max[c])
-        //                 {
-        //                     max[c] = tester[c];
-        //                 }
+        for i in 0..2 {
+            let dubi = i as f32;
+            for j in 0..2 {
+                let dubj = j as f32;
+                for k in 0..2 {
+                    let dubk = k as f32;
+                    let x = (dubi * b.max.x) + ((1.0 - dubi) * b.min.x);
+                    let y = (dubj * b.max.y) + ((1.0 - dubj) * b.min.y);
+                    let z = (dubk * b.max.z) + ((1.0 - dubk) * b.min.z);
+                    let newx = (cos_theta * x) + (sin_theta * z);
+                    let newz = (-sin_theta * x) + (cos_theta * z);
+                    let mut tester = to_single_array(vec3(newx, y, newz));
+                    for c in 0..3 {
+                        if tester[c] > max[c] {
+                            max[c] = tester[c];
+                        }
+                        if tester[c] < min[c] {
+                            min[c] = tester[c]
+                        }
+                    }
+                }
+            }
+        }
 
-        //                 if (tester[c] < min[c])
-        //                 {
-        //                     min[c] = tester[c];
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-
-        // BoundingBox = new AABB(new Vector3(min[0], min[1], min[2]), new Vector3(max[0], max[1], max[2]));
+        let bounding_box = AABB::new(vec3(min[0], min[1], min[2]), vec3(max[0], max[1], max[2]));
 
         Arc::new(Box::new(RotateY {
             hitable,
             sin_theta,
             cos_theta,
+            bounding_box,
         }))
     }
-}
-
-fn to_single_array(v: Vector3<f32>) -> Vec<f32> {
-    vec![v.x, v.y, v.z]
 }
 
 impl Hitable for RotateY {
@@ -109,5 +99,9 @@ impl Hitable for RotateY {
     }
     fn random(&self, origin: Vector3<f32>) -> Vector3<f32> {
         self.hitable.random(origin)
+    }
+
+    fn get_bounding_box(&self, _t0: f32, _t1: f32) -> Arc<Box<AABB>> {
+        self.bounding_box.clone()
     }
 }

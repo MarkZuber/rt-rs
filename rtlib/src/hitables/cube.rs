@@ -1,13 +1,13 @@
 use crate::hitables::{
-    FlipNormals, HitRecord, Hitable, HitableList, ThreadHitable, XyRect, XzRect, YzRect,
+    FlipNormals, HitRecord, Hitable, HitableList, ThreadHitable, XyRect, XzRect, YzRect, AABB,
 };
 use crate::render::Ray;
 use crate::Vector3;
 use std::sync::Arc;
 
 pub struct Cube {
-    _pos_min: Vector3<f32>,
-    _pos_max: Vector3<f32>,
+    pos_min: Vector3<f32>,
+    pos_max: Vector3<f32>,
     list: ThreadHitable,
 }
 
@@ -22,8 +22,8 @@ impl Cube {
             FlipNormals::new(YzRect::new(p0.y, p1.y, p0.z, p1.z, p1.x, material_id)),
         ]);
         Arc::new(Box::new(Cube {
-            _pos_min: p0,
-            _pos_max: p1,
+            pos_min: p0,
+            pos_max: p1,
             list: list,
         }))
     }
@@ -41,7 +41,7 @@ impl Hitable for Cube {
         self.list.random(origin)
     }
 
-    // fn get_bounding_box(&self, t0: f32, t1: f32) -> AABB {
-    // return new AABB(PosMin, PosMax);
-    // }
+    fn get_bounding_box(&self, t0: f32, t1: f32) -> Arc<Box<AABB>> {
+        AABB::new(self.pos_min, self.pos_max)
+    }
 }

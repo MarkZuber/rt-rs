@@ -1,4 +1,4 @@
-use crate::hitables::{HitRecord, Hitable, ThreadHitable};
+use crate::hitables::{HitRecord, Hitable, ThreadHitable, AABB};
 use crate::next_rand_f32;
 use crate::render::Ray;
 use crate::{vec3, InnerSpace, Point2, Vector3};
@@ -52,9 +52,12 @@ impl Hitable for XzRect {
         ))
     }
 
-    // fn get_bounding_box(&self, t0: f32, t1: f32) -> AABB {
-    // return new AABB(new Vector3(X0, K - 0.001f, Z0), new Vector3(X1, K + 0.0001f, Z1));
-    // }
+    fn get_bounding_box(&self, t0: f32, t1: f32) -> Arc<Box<AABB>> {
+        AABB::new(
+            vec3(self.x0, self.k - 0.001, self.z0),
+            vec3(self.x1, self.k + 0.0001, self.z1),
+        )
+    }
 
     fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>) -> f32 {
         if let Some(hr) = self.hit(&Ray::new(origin, v), 0.001_f32, f32::MAX) {

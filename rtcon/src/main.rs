@@ -10,10 +10,10 @@ fn get_datetime_file_marker() -> String {
 
 fn main() {
     let ray_trace_depth = 50;
-    let num_samples = 1000;
+    let num_samples = 100;
 
-    let image_width = 600;
-    let image_height = 600;
+    let image_width = 300;
+    let image_height = 300;
 
     let render_config = RenderConfig::new(ray_trace_depth, num_samples);
     let renderer = PerPixelRenderer::new();

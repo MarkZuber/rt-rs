@@ -1,4 +1,4 @@
-use crate::hitables::{HitRecord, Hitable, ThreadHitable};
+use crate::hitables::{HitRecord, Hitable, ThreadHitable, AABB};
 use crate::render::Ray;
 use crate::Vector3;
 use std::sync::Arc;
@@ -34,7 +34,7 @@ impl Hitable for FlipNormals {
         self.hitable.random(origin)
     }
 
-    // fn get_bounding_box(&self, t0: f32, t1: f32) -> AABB {
-    //     self.hitable.get_bounding_box(t0, t1)
-    // }
+    fn get_bounding_box(&self, t0: f32, t1: f32) -> Arc<Box<AABB>> {
+        self.hitable.get_bounding_box(t0, t1)
+    }
 }

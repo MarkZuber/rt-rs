@@ -1,6 +1,6 @@
 use rtlib::cameras::{Camera, NormalCamera};
 use rtlib::hitables::{
-    Cube, FlipNormals, HitableList, RotateY, Sphere, Translate, XyRect, XzRect, YzRect,
+    BvhNode, Cube, FlipNormals, HitableList, RotateY, Sphere, Translate, XyRect, XzRect, YzRect,
 };
 use rtlib::materials::{
     CompiledMaterials, DialectricMaterial, DiffuseLight, LambertianMaterial, MetalMaterial,
@@ -25,7 +25,8 @@ pub fn create_cornell_box_scene() -> Scene {
 
     let glass_sphere = Sphere::new(vec3(190.0, 90.0, 190.0), 90.0, glass);
 
-    let world = HitableList::from_vec(vec![
+    let mut hitables = vec![
+        // let hitables = vec![
         FlipNormals::new(YzRect::new(0.0, 555.0, 0.0, 555.0, 0.0, green)),
         YzRect::new(0.0, 555.0, 0.0, 555.0, 555.0, red),
         FlipNormals::new(light_rect.clone()),
@@ -40,9 +41,14 @@ pub fn create_cornell_box_scene() -> Scene {
             vec3(265.0, 0.0, 295.0),
         ),
         glass_sphere,
-    ]);
+    ];
 
-    let scene = Scene::new(world, light_rect, Arc::new(Box::new(materials)));
+    // let world = HitableList::from_vec(hitables);
+
+    // todo: bvhnode is broken, needs debugging.  takes 2x time as not using bounding boxes.
+    let bvh_world = BvhNode::new(&mut hitables, 0.0, 0.0);
+    let scene = Scene::new(bvh_world, light_rect, Arc::new(Box::new(materials)));
+    // let scene = Scene::new(world, light_rect, Arc::new(Box::new(materials)));
 
     scene
 }
