@@ -1,6 +1,7 @@
 use crate::hitables::{HitRecord, Hitable, ThreadHitable, AABB};
 use crate::render::Ray;
 use crate::Vector3;
+use std::fmt;
 use std::sync::Arc;
 
 pub struct Translate {
@@ -14,6 +15,16 @@ impl Translate {
             hitable,
             displacement,
         }))
+    }
+}
+
+impl fmt::Display for Translate {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "[Translate({}, displacement: {:?})]",
+            self.hitable, self.displacement
+        )
     }
 }
 

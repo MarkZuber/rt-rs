@@ -1,8 +1,8 @@
 use crate::hitables::{to_single_array, HitRecord, Hitable, ThreadHitable, AABB};
 use crate::render::Ray;
 use crate::{vec3, Vector3};
-use std::f32;
 use std::sync::Arc;
+use std::{f32, fmt};
 
 pub struct RotateY {
     hitable: ThreadHitable,
@@ -32,7 +32,7 @@ impl RotateY {
                     let z = (dubk * b.max.z) + ((1.0 - dubk) * b.min.z);
                     let newx = (cos_theta * x) + (sin_theta * z);
                     let newz = (-sin_theta * x) + (cos_theta * z);
-                    let mut tester = to_single_array(vec3(newx, y, newz));
+                    let tester = to_single_array(vec3(newx, y, newz));
                     for c in 0..3 {
                         if tester[c] > max[c] {
                             max[c] = tester[c];
@@ -53,6 +53,12 @@ impl RotateY {
             cos_theta,
             bounding_box,
         }))
+    }
+}
+
+impl fmt::Display for RotateY {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "[RotateY({})]", self.hitable)
     }
 }
 

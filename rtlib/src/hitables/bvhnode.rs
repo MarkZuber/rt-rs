@@ -1,6 +1,7 @@
 use crate::hitables::{HitRecord, Hitable, ThreadHitable, AABB};
 use crate::render::Ray;
 use crate::{next_rand_f32, vec3, Vector3};
+use std::fmt;
 use std::sync::Arc;
 
 pub struct BvhNode {
@@ -33,6 +34,12 @@ fn compare_hitables(
     f: impl Fn(Arc<Box<AABB>>, Arc<Box<AABB>>) -> std::cmp::Ordering,
 ) -> std::cmp::Ordering {
     f(x.get_bounding_box(0.0, 0.0), y.get_bounding_box(0.0, 0.0))
+}
+
+impl fmt::Display for BvhNode {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "[BvhNode(<LEFT:{}, RIGHT:{}>)]  ", self.left, self.right)
+    }
 }
 
 impl BvhNode {

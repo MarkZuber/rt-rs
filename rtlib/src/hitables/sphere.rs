@@ -3,8 +3,8 @@ use crate::pdfs::OrthoNormalBase;
 use crate::random_to_sphere;
 use crate::render::Ray;
 use crate::{to_unit_vector, vec3, InnerSpace, Point2, Vector3};
-use std::f32;
 use std::sync::Arc;
+use std::{f32, fmt};
 
 pub struct Sphere {
     center: Vector3<f32>,
@@ -41,6 +41,16 @@ impl Sphere {
 
     pub fn get_material_id(&self) -> u64 {
         self.material_id
+    }
+}
+
+impl fmt::Display for Sphere {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "[Sphere(center: {:?}, radius: {})]",
+            self.center, self.radius
+        )
     }
 }
 
@@ -84,7 +94,7 @@ impl Hitable for Sphere {
         None
     }
 
-    fn get_bounding_box(&self, t0: f32, t1: f32) -> Arc<Box<AABB>> {
+    fn get_bounding_box(&self, _t0: f32, _t1: f32) -> Arc<Box<AABB>> {
         AABB::new(
             self.center() - vec3(self.radius(), self.radius(), self.radius()),
             self.center + vec3(self.radius(), self.radius(), self.radius()),

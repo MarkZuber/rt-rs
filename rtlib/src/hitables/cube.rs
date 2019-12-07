@@ -3,6 +3,7 @@ use crate::hitables::{
 };
 use crate::render::Ray;
 use crate::Vector3;
+use std::fmt;
 use std::sync::Arc;
 
 pub struct Cube {
@@ -29,6 +30,12 @@ impl Cube {
     }
 }
 
+impl fmt::Display for Cube {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "[Cube({:?}, {:?})]", self.pos_min, self.pos_max)
+    }
+}
+
 impl Hitable for Cube {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
         self.list.hit(ray, t_min, t_max)
@@ -41,7 +48,7 @@ impl Hitable for Cube {
         self.list.random(origin)
     }
 
-    fn get_bounding_box(&self, t0: f32, t1: f32) -> Arc<Box<AABB>> {
+    fn get_bounding_box(&self, _t0: f32, _t1: f32) -> Arc<Box<AABB>> {
         AABB::new(self.pos_min, self.pos_max)
     }
 }

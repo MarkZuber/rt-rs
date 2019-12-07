@@ -3,6 +3,7 @@ use crate::hitables::{Hitable, ThreadHitable, AABB};
 use crate::next_rand_f32;
 use crate::render::Ray;
 use crate::{vec3, Point2, Vector3};
+use std::fmt;
 use std::sync::Arc;
 
 pub struct HitableList {
@@ -22,6 +23,12 @@ impl HitableList {
 
     pub fn size(&self) -> usize {
         self.hitables.len()
+    }
+}
+
+impl fmt::Display for HitableList {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "[HitableLilst()]") // todo: , self.hitables)
     }
 }
 

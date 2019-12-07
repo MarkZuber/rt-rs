@@ -26,11 +26,12 @@ pub use self::yzrect::YzRect;
 
 use crate::render::Ray;
 use crate::Vector3;
+use std::fmt;
 use std::sync::Arc;
 
 type ThreadHitable = Arc<Box<dyn Hitable + Send>>;
 
-pub trait Hitable: Sync {
+pub trait Hitable: Sync + fmt::Display {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord>;
     fn get_bounding_box(&self, t0: f32, t1: f32) -> Arc<Box<AABB>>;
     fn get_pdf_value(&self, _origin: Vector3<f32>, _v: Vector3<f32>) -> f32;

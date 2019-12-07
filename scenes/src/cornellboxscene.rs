@@ -1,4 +1,6 @@
 use rtlib::cameras::{Camera, NormalCamera};
+
+#[allow(unused_imports)]
 use rtlib::hitables::{
     BvhNode, Cube, FlipNormals, HitableList, RotateY, Sphere, Translate, XyRect, XzRect, YzRect,
 };
@@ -47,6 +49,9 @@ pub fn create_cornell_box_scene() -> Scene {
 
     // todo: bvhnode is broken, needs debugging.  takes 2x time as not using bounding boxes.
     let bvh_world = BvhNode::new(&mut hitables, 0.0, 0.0);
+
+    println!("BVH WORLD: {}", bvh_world);
+
     let scene = Scene::new(bvh_world, light_rect, Arc::new(Box::new(materials)));
     // let scene = Scene::new(world, light_rect, Arc::new(Box::new(materials)));
 

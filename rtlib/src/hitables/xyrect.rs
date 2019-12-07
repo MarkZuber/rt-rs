@@ -2,8 +2,8 @@ use crate::hitables::{HitRecord, Hitable, ThreadHitable, AABB};
 use crate::next_rand_f32;
 use crate::render::Ray;
 use crate::{vec3, InnerSpace, Point2, Vector3};
-use std::f32;
 use std::sync::Arc;
+use std::{f32, fmt};
 
 pub struct XyRect {
     x0: f32,
@@ -24,6 +24,16 @@ impl XyRect {
             k,
             material_id,
         }))
+    }
+}
+
+impl fmt::Display for XyRect {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "[XyRect(x0: {}, x1: {}, y0: {}, y1: {}, k: {})]",
+            self.x0, self.x1, self.y0, self.y1, self.k
+        )
     }
 }
 
@@ -52,7 +62,7 @@ impl Hitable for XyRect {
         ))
     }
 
-    fn get_bounding_box(&self, t0: f32, t1: f32) -> Arc<Box<AABB>> {
+    fn get_bounding_box(&self, _t0: f32, _t1: f32) -> Arc<Box<AABB>> {
         AABB::new(
             vec3(self.x0, self.y0, self.k - 0.001),
             vec3(self.x1, self.y1, self.k + 0.0001),

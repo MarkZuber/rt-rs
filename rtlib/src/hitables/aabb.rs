@@ -23,6 +23,9 @@ impl AABB {
         let originvec = to_single_array(ray.get_origin());
         let dirvec = to_single_array(ray.get_direction());
 
+        let mut min = t_min;
+        let mut max = t_max;
+
         for a in 0..3 {
             let inv_d = 1.0 / dirvec[a];
             let mut t0 = (minvec[a] - originvec[a]) * inv_d;
@@ -33,9 +36,9 @@ impl AABB {
                 t1 = temp;
             }
 
-            let new_t_min = t0.max(t_min);
-            let new_t_max = t1.min(t_max);
-            if new_t_max <= new_t_min {
+            min = t0.max(min);
+            max = t1.min(max);
+            if max <= min {
                 return false;
             }
         }
