@@ -6,8 +6,10 @@ mod ray;
 mod raytracer;
 mod renderconfig;
 mod renderer;
+mod renderexec;
 mod samplingraytracer;
 mod scene;
+mod scenegenerator;
 
 pub use self::color::Color;
 pub use self::perpixelrenderer::PerPixelRenderer;
@@ -18,5 +20,7 @@ pub use self::ray::Ray;
 pub use self::raytracer::RayTracer;
 pub use self::renderconfig::RenderConfig;
 pub use self::renderer::Renderer;
+pub use self::renderexec::RenderExec;
 pub use self::samplingraytracer::SamplingRayTracer;
 pub use self::scene::Scene;
+pub use self::scenegenerator::SceneGenerator;

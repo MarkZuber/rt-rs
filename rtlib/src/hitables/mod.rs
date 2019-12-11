@@ -29,7 +29,7 @@ use crate::Vector3;
 use std::fmt;
 use std::sync::Arc;
 
-type ThreadHitable = Arc<Box<dyn Hitable + Send>>;
+pub type ThreadHitable = Arc<Box<dyn Hitable + Send>>;
 
 pub trait Hitable: Sync + fmt::Display {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord>;

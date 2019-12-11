@@ -1,7 +1,8 @@
+// #![feature(test)]
+
 use chrono::prelude::*;
-use rtlib::render::{ImagePixelBuffer, PerPixelRenderer, RenderConfig};
+use rtlib::render::RenderExec;
 use scenes::*;
-use std::sync::Arc;
 
 fn get_datetime_file_marker() -> String {
     let local: DateTime<Local> = Local::now();
@@ -9,30 +10,40 @@ fn get_datetime_file_marker() -> String {
 }
 
 fn main() {
-    let ray_trace_depth = 50;
-    let num_samples = 100;
-
-    let image_width = 300;
-    let image_height = 300;
-
-    let render_config = RenderConfig::new(ray_trace_depth, num_samples);
-    let renderer = PerPixelRenderer::new();
-    let mut pixel_buffer = ImagePixelBuffer::new(image_width, image_height);
-
-    let scene = create_cornell_box_scene();
-    let camera = create_cornell_box_camera(image_width, image_height);
-
-    let _renderer_data = renderer.render(
-        &mut pixel_buffer,
-        Arc::new(Box::new(scene)),
-        camera,
-        &render_config,
-    );
+    let mut render_exec = RenderExec::new(CornellBoxScene::new(), 300, 300, 50, 30, false, true);
+    render_exec.execute();
 
     std::fs::create_dir_all("./images").unwrap();
-
-    pixel_buffer.save_as_png(&format!(
+    render_exec.save_pixel_buffer(&format!(
         "./images/image_{}.png",
         get_datetime_file_marker()
     ));
 }
+
+// extern crate test;
+
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use test::Bencher;
+
+//     fn create_bench_scene(use_bvh: bool) -> RenderExec {
+//         RenderExec::new(CornellBoxScene::new(), 50, 50, 10, 30, use_bvh, false)
+//     }
+
+//     #[bench]
+//     fn bench_with_bvh(b: &mut Bencher) {
+//         let mut render_exec = create_bench_scene(true);
+//         b.iter(|| {
+//             render_exec.execute();
+//         });
+//     }
+
+//     #[bench]
+//     fn bench_no_bvh(b: &mut Bencher) {
+//         let mut render_exec = create_bench_scene(false);
+//         b.iter(|| {
+//             render_exec.execute();
+//         });
+//     }
+// }

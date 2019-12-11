@@ -54,11 +54,6 @@ impl RayTracer for SamplingRayTracer {
                                 );
                             }
                             None => {
-                                // todo: need to figure out borrow checker for this to work: let f = Rc::new(HitablePdf::new(light_hitable, hit_record.get_p()));
-                                // let f = Rc::new(HitablePdf::new(Box::new(NullHitable::new()), hit_record.get_p()));
-
-                                // this is a workaround since i can't figure out the borrow checker for referencing the light_hitable inside
-                                // the HitablePdf
                                 let f = Arc::new(HitablePdf::new(
                                     the_scene.get_light_hitable(),
                                     hit_record.get_p(),
@@ -92,9 +87,6 @@ impl RayTracer for SamplingRayTracer {
                                     .multiply_by_scalar(scattering_pdf)
                                     .multiply(depth_ray_color))
                                 .multiply_by_scalar(1.0 / pdf_value);
-                                // Debug.WriteLine($"Attenuation ({scatterResult.Attenuation}) ScatteringPdf ({scatteringPdf}) DepthRayColor({depthRayColor}) PdfValue({pdfValue})");
-                                // Debug.WriteLine($"emitted: {emitted}");
-                                // Debug.WriteLine($"RecurseColor: {recurseColor}");
                                 return emitted.add(recurse_color);
                             }
                         }

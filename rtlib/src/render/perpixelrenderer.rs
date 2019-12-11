@@ -1,4 +1,4 @@
-use crate::cameras::Camera;
+use crate::cameras::ThreadCamera;
 use crate::next_rand_f32;
 use crate::render::{
     Color, PixelBuffer, RayTracer, RenderConfig, Renderer, SamplingRayTracer, Scene,
@@ -20,13 +20,17 @@ impl Renderer for PerPixelRenderer {
         &self,
         pixel_buffer: &mut dyn PixelBuffer,
         the_scene: Arc<Box<Scene>>,
-        camera: Box<dyn Camera>,
+        the_camera: ThreadCamera,
         render_config: &RenderConfig,
     ) {
+        let show_bar = render_config.show_progress_bar;
+
         let bar = ProgressBar::new(pixel_buffer.get_height() as u64);
-        bar.set_style(ProgressStyle::default_bar().template(
+        if show_bar {
+            bar.set_style(ProgressStyle::default_bar().template(
             "[{elapsed} elapsed] {wide_bar:.cyan/white} {percent}% [{eta} remaining] [rendering]",
         ));
+        }
 
         let ray_tracer = SamplingRayTracer::new();
 
@@ -36,6 +40,7 @@ impl Renderer for PerPixelRenderer {
                     .into_par_iter()
                     .map(|_sample| {
                         let scene = the_scene.clone();
+                        let camera = the_camera.clone();
 
                         let u = (x as f32 + next_rand_f32()) / pixel_buffer.get_width() as f32;
                         let v = (y as f32 + next_rand_f32()) / pixel_buffer.get_height() as f32;
@@ -43,11 +48,6 @@ impl Renderer for PerPixelRenderer {
                         let ray = camera.get_ray(u, v);
 
                         ray_tracer.get_ray_color(&ray, scene, render_config, 0)
-
-                        // ColorVector::new(
-                        //     (x as f32) / (pixel_buffer.get_width() as f32),
-                        //     (y as f32) / (pixel_buffer.get_height() as f32),
-                        //     0.7)
                     })
                     .sum();
 
@@ -57,9 +57,13 @@ impl Renderer for PerPixelRenderer {
 
                 pixel_buffer.set_pixel_color(x, y, color)
             }
-            bar.inc(1);
+            if show_bar {
+                bar.inc(1);
+            }
         }
 
-        bar.finish();
+        if show_bar {
+            bar.finish();
+        }
     }
 }
