@@ -20,6 +20,8 @@ impl RayTracer for SamplingRayTracer {
         render_config: &RenderConfig,
         depth: u32,
     ) -> Color {
+        info!("get_ray_color depth: {}", depth);
+
         // the 0.001 corrects for the "shadow acne"
         match the_scene.get_world().hit(ray, 0.001, std::f32::MAX) {
             Some(hit_record) => {

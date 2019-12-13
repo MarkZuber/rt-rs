@@ -64,6 +64,7 @@ impl fmt::Display for RotateY {
 
 impl Hitable for RotateY {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+        info!("rotatey::hit()");
         let mut origin = to_single_array(ray.get_origin());
         let mut dir = to_single_array(ray.get_direction());
         origin[0] = (self.cos_theta * ray.get_origin().x) - (self.sin_theta * ray.get_origin().z);

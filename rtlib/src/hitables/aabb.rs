@@ -1,11 +1,18 @@
 use crate::hitables::to_single_array;
 use crate::render::Ray;
 use crate::{vec3, Vector3};
+use std::fmt;
 use std::sync::Arc;
 
 pub struct AABB {
     pub min: Vector3<f32>,
     pub max: Vector3<f32>,
+}
+
+impl fmt::Display for AABB {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "({:?}, {:?})", self.min, self.max)
+    }
 }
 
 impl AABB {
@@ -18,6 +25,7 @@ impl AABB {
     }
 
     pub fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> bool {
+        info!("aabb::hit()");
         let minvec = to_single_array(self.min);
         let maxvec = to_single_array(self.max);
         let originvec = to_single_array(ray.get_origin());

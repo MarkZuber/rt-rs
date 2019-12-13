@@ -38,7 +38,9 @@ impl Renderer for PerPixelRenderer {
             for x in 0..pixel_buffer.get_width() {
                 let mut color: Color = (0..render_config.num_samples)
                     .into_par_iter()
+                    // .into_iter()
                     .map(|_sample| {
+                        info!("begin render pixel sample ({}, {})", x, y);
                         let scene = the_scene.clone();
                         let camera = the_camera.clone();
 
@@ -47,7 +49,10 @@ impl Renderer for PerPixelRenderer {
 
                         let ray = camera.get_ray(u, v);
 
-                        ray_tracer.get_ray_color(&ray, scene, render_config, 0)
+                        let clr = ray_tracer.get_ray_color(&ray, scene, render_config, 0);
+                        info!("end render pixel sample ({}, {})", x, y);
+
+                        clr
                     })
                     .sum();
 

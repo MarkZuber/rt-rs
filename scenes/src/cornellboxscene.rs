@@ -24,7 +24,7 @@ pub fn create_scene(
     let world = if use_bvh {
         let mut hitables = hitables;
         let bvh_world = BvhNode::new(&mut hitables, 0.0, 0.0);
-        println!("BVH WORLD: {}", bvh_world);
+        info!("BVH WORLD: {}", bvh_world);
         bvh_world
     } else {
         HitableList::from_vec(hitables)
@@ -42,7 +42,7 @@ impl CornellBoxScene {
 }
 
 impl SceneGenerator for CornellBoxScene {
-    fn create_scene(&self, use_bvh: bool) -> Scene {
+    fn create_scene(&self) -> Scene {
         let mut materials: CompiledMaterials = CompiledMaterials::new();
 
         let light_material = materials.add(DiffuseLight::new(ColorTexture::new(15.0, 15.0, 15.0)));
@@ -73,7 +73,7 @@ impl SceneGenerator for CornellBoxScene {
             glass_sphere,
         ];
 
-        create_scene(hitables, materials, &light_rect, use_bvh)
+        create_scene(hitables, materials, &light_rect, false)
     }
 
     fn create_camera(&self, image_width: u32, image_height: u32) -> ThreadCamera {

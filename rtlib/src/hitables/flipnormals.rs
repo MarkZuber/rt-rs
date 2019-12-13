@@ -22,6 +22,7 @@ impl fmt::Display for FlipNormals {
 
 impl Hitable for FlipNormals {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+        info!("flipnormals::hit()");
         if let Some(hr) = self.hitable.hit(ray, t_min, t_max) {
             return Some(HitRecord::new(
                 hr.get_t(),

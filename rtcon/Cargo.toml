@@ -10,3 +10,6 @@ edition = "2018"
 rtlib = { path = "../rtlib" }
 scenes = { path = "../scenes" }
 chrono = "*"
+log = "*"
+log4rs = "*"
+structopt = "*"

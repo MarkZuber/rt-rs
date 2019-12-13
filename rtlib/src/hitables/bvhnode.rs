@@ -38,7 +38,11 @@ fn compare_hitables(
 
 impl fmt::Display for BvhNode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "[BvhNode(<LEFT:{}, RIGHT:{}>)]  ", self.left, self.right)
+        write!(
+            f,
+            "[BvhNode(aabb: <{}> ==> <LEFT:{}, RIGHT:{}>)]  ",
+            self.bounding_box, self.left, self.right
+        )
     }
 }
 
@@ -103,25 +107,45 @@ impl BvhNode {
 
 impl Hitable for BvhNode {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+        info!("bvhnode::hit()");
         if !self.bounding_box.hit(ray, t_min, t_max) {
+            info!("exiting bvhhode::hit() -- NONE");
             return None;
         }
 
-        match (
-            self.left.hit(ray, t_min, t_max),
-            self.right.hit(ray, t_min, t_max),
-        ) {
+        info!("going left");
+        let h_l = self.left.hit(ray, t_min, t_max);
+        info!("done left, going right");
+        let h_r = self.right.hit(ray, t_min, t_max);
+        info!("done right");
+
+        let h = match (h_l, h_r) {
             (Some(hr_left), Some(hr_right)) => {
                 if hr_left.get_t() < hr_right.get_t() {
+                    info!("hr_left");
                     Some(hr_left)
                 } else {
+                    info!("hr_right");
                     Some(hr_right)
                 }
             }
-            (Some(hr_left), None) => Some(hr_left),
-            (None, Some(hr_right)) => Some(hr_right),
-            (None, None) => None,
-        }
+            (Some(hr_left), None) => {
+                info!("hr_left");
+                Some(hr_left)
+            }
+            (None, Some(hr_right)) => {
+                info!("hr_right");
+                Some(hr_right)
+            }
+            (None, None) => {
+                info!("none/none");
+                None
+            }
+        };
+
+        info!("exiting bvhhode::hit()");
+
+        h
     }
     fn get_pdf_value(&self, _origin: Vector3<f32>, _v: Vector3<f32>) -> f32 {
         0.0

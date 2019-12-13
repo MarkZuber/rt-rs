@@ -38,6 +38,7 @@ impl fmt::Display for Cube {
 
 impl Hitable for Cube {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+        info!("Cube::hit()");
         self.list.hit(ray, t_min, t_max)
     }
 

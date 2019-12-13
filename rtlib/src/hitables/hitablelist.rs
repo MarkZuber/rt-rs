@@ -34,6 +34,7 @@ impl fmt::Display for HitableList {
 
 impl Hitable for HitableList {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+        info!("hitablelist::hit()");
         let mut hit_something: bool = false;
         let mut final_hitrecord: HitRecord = HitRecord::new(
             t_max,

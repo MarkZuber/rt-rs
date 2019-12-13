@@ -30,6 +30,7 @@ impl fmt::Display for Translate {
 
 impl Hitable for Translate {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+        info!("translate::hit()");
         let moved_ray = Ray::new(ray.get_origin() - self.displacement, ray.get_direction());
         if let Some(hr) = self.hitable.hit(&moved_ray, t_min, t_max) {
             return Some(HitRecord::new(

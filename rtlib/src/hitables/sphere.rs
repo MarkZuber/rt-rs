@@ -56,6 +56,7 @@ impl fmt::Display for Sphere {
 
 impl Hitable for Sphere {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+        info!("sphere::hit()");
         let oc: Vector3<f32> = ray.get_origin() - self.center();
         let a: f32 = ray.get_direction().dot(ray.get_direction());
         let b: f32 = 2.0 * oc.dot(ray.get_direction());

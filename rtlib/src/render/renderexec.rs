@@ -19,14 +19,13 @@ impl RenderExec {
         image_height: u32,
         ray_trace_depth: u32,
         num_samples: u32,
-        use_bvh: bool,
         show_progress_bar: bool,
     ) -> RenderExec {
         let pixel_buffer = ImagePixelBuffer::new(image_width, image_height);
         let render_config = RenderConfig::new(ray_trace_depth, num_samples, show_progress_bar);
         let renderer = PerPixelRenderer::new();
 
-        let scene = scene_generator.create_scene(use_bvh);
+        let scene = scene_generator.create_scene();
         let camera = scene_generator.create_camera(image_width, image_height);
         RenderExec {
             pixel_buffer,

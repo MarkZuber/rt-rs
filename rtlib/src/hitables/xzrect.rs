@@ -39,6 +39,7 @@ impl fmt::Display for XzRect {
 
 impl Hitable for XzRect {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+        info!("xzrect::hit()");
         let t = (self.k - ray.get_origin().y) / ray.get_direction().y;
         if t < t_min || t > t_max {
             return None;

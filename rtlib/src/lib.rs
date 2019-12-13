@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate log;
+
 pub mod cameras;
 pub mod hitables;
 pub mod materials;

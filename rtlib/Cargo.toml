@@ -12,3 +12,5 @@ cgmath = "*"
 image = "*"
 indicatif = "*"
 rayon = "*"
+log = "*"
+
