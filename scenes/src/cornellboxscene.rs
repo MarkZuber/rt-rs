@@ -1,4 +1,5 @@
 use rtlib::cameras::{NormalCamera, ThreadCamera};
+use rtlib::render::create_scene;
 
 #[allow(unused_imports)]
 use rtlib::hitables::{
@@ -13,25 +14,6 @@ use rtlib::render::{Scene, SceneGenerator};
 use rtlib::textures::ColorTexture;
 use rtlib::{vec3, Vector3};
 use std::sync::Arc;
-
-// todo: move this into the library...
-pub fn create_scene(
-    hitables: Vec<ThreadHitable>,
-    materials: CompiledMaterials,
-    light_hitable: &ThreadHitable,
-    use_bvh: bool,
-) -> Scene {
-    let world = if use_bvh {
-        let mut hitables = hitables;
-        let bvh_world = BvhNode::new(&mut hitables, 0.0, 0.0);
-        info!("BVH WORLD: {}", bvh_world);
-        bvh_world
-    } else {
-        HitableList::from_vec(hitables)
-    };
-
-    Scene::new(world, light_hitable.clone(), Arc::new(Box::new(materials)))
-}
 
 pub struct CornellBoxScene {}
 

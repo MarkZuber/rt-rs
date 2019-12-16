@@ -1,16 +1,16 @@
 use crate::hitables::HitRecord;
 use crate::materials::{Material, ScatterResult, ThreadMaterial};
 use crate::render::{Color, Ray};
-use crate::textures::{ColorTexture, Texture};
+use crate::textures::ThreadTexture;
 use crate::{Point2, Vector3};
 use std::sync::Arc;
 
 pub struct DiffuseLight {
-    texture: Arc<Box<ColorTexture>>,
+    texture: ThreadTexture,
 }
 
 impl DiffuseLight {
-    pub fn new(texture: Arc<Box<ColorTexture>>) -> ThreadMaterial {
+    pub fn new(texture: ThreadTexture) -> ThreadMaterial {
         Arc::new(Box::new(DiffuseLight { texture }))
     }
 }

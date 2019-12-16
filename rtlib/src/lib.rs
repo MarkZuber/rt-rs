@@ -1,6 +1,9 @@
 #[macro_use]
 extern crate log;
 
+#[macro_use]
+extern crate lazy_static;
+
 pub mod cameras;
 pub mod hitables;
 pub mod materials;
@@ -17,7 +20,7 @@ fn to_unit_vector(v: Vector3<f32>) -> Vector3<f32> {
     v / v.magnitude()
 }
 
-fn next_rand_f32() -> f32 {
+pub fn next_rand_f32() -> f32 {
     let mut rng = rand::thread_rng();
     rng.gen::<f32>()
 }

@@ -11,6 +11,12 @@ pub struct HitableList {
 }
 
 impl HitableList {
+    pub fn new() -> ThreadHitable {
+        Arc::new(Box::new(HitableList {
+            hitables: Arc::new(vec![]),
+        }))
+    }
+
     pub fn from_vec(items: Vec<ThreadHitable>) -> ThreadHitable {
         let mut pre_hitables: Vec<ThreadHitable> = Vec::new();
         for item in items {

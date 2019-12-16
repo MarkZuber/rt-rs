@@ -2,17 +2,17 @@ use crate::hitables::HitRecord;
 use crate::materials::{Material, ScatterResult, ThreadMaterial};
 use crate::pdfs::CosinePdf;
 use crate::render::{Color, Ray};
-use crate::textures::{ColorTexture, Texture};
+use crate::textures::ThreadTexture;
 use crate::{InnerSpace, Point2, Vector3};
 use std::f32;
 use std::sync::Arc;
 
 pub struct LambertianMaterial {
-    albedo: Arc<Box<ColorTexture>>,
+    albedo: ThreadTexture,
 }
 
 impl LambertianMaterial {
-    pub fn new(albedo: Arc<Box<ColorTexture>>) -> ThreadMaterial {
+    pub fn new(albedo: ThreadTexture) -> ThreadMaterial {
         Arc::new(Box::new(LambertianMaterial { albedo }))
     }
 }

@@ -1,5 +1,5 @@
 use crate::render::Color;
-use crate::textures::Texture;
+use crate::textures::{Texture, ThreadTexture};
 use crate::{Point2, Vector3};
 use std::sync::Arc;
 
@@ -8,7 +8,7 @@ pub struct ColorTexture {
 }
 
 impl ColorTexture {
-    pub fn new(r: f32, g: f32, b: f32) -> Arc<Box<ColorTexture>> {
+    pub fn new(r: f32, g: f32, b: f32) -> ThreadTexture {
         Arc::new(Box::new(ColorTexture {
             color: Color::new(r, g, b),
         }))

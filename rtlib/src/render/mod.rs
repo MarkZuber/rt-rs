@@ -23,4 +23,5 @@ pub use self::renderer::Renderer;
 pub use self::renderexec::RenderExec;
 pub use self::samplingraytracer::SamplingRayTracer;
 pub use self::scene::Scene;
+pub use self::scenegenerator::create_scene;
 pub use self::scenegenerator::SceneGenerator;

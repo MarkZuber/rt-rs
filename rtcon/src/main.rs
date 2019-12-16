@@ -30,7 +30,9 @@ fn main() {
 
     enable_logging(&opts);
 
-    let mut render_exec = RenderExec::new(CornellBoxScene::new(), 300, 300, 50, 400, true);
+    let scene = ManySpheresScene::new(); // CornellBoxScene:new();
+
+    let mut render_exec = RenderExec::new(scene, 800, 800, 75, 2000, true);
     render_exec.execute();
 
     std::fs::create_dir_all("./images").unwrap();

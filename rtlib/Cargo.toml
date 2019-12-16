@@ -13,4 +13,5 @@ image = "*"
 indicatif = "*"
 rayon = "*"
 log = "*"
+lazy_static = "*"
 
