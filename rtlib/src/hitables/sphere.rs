@@ -32,10 +32,10 @@ impl Sphere {
     pub fn get_sphere_uv(&self, p: Vector3<f32>) -> Point2<f32> {
         let pi = std::f32::consts::PI;
         let punit = to_unit_vector(p);
-        let phi: f32 = punit.z.atan2(punit.x);
-        let theta: f32 = (punit.y).asin();
-        let u: f32 = 1.0 - ((phi + pi) / (2.0 * pi));
-        let v: f32 = (theta + (pi / 2.0)) / pi;
+        let phi = punit.z.atan2(punit.x);
+        let theta = punit.y.asin();
+        let u = 1.0 - ((phi + pi) / (2.0 * pi));
+        let v = (theta + (pi / 2.0)) / pi;
         Point2::new(u, v)
     }
 
@@ -57,13 +57,14 @@ impl fmt::Display for Sphere {
 impl Hitable for Sphere {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
         info!("sphere::hit()");
-        let oc: Vector3<f32> = ray.get_origin() - self.center();
-        let a: f32 = ray.get_direction().dot(ray.get_direction());
-        let b: f32 = 2.0 * oc.dot(ray.get_direction());
-        let c: f32 = oc.dot(oc) - self.radius * self.radius;
-        let discriminant: f32 = b * b - 4.0 * a * c;
+        let oc = ray.get_origin() - self.center();
+        let a = ray.get_direction().dot(ray.get_direction());
+        let b = oc.dot(ray.get_direction());
+        let c = oc.dot(oc) - self.radius * self.radius;
+        let discriminant = (b * b) - (a * c);
+
         if discriminant > 0.0 {
-            let t: f32 = (0.0 - b - discriminant.sqrt()) / (2.0 * a);
+            let t = (-b - discriminant.sqrt()) / a;
             if t < t_max && t > t_min {
                 let p = ray.get_point_at_parameter(t);
                 // The length p - c would be the radius
@@ -77,7 +78,7 @@ impl Hitable for Sphere {
                     self.get_sphere_uv(p),
                 ));
             }
-            let t: f32 = (0.0 - b + discriminant.sqrt()) / (2.0 * a);
+            let t: f32 = (-b + discriminant.sqrt()) / a;
             if t < t_max && t > t_min {
                 let p = ray.get_point_at_parameter(t);
                 // The length p - c would be the radius
@@ -96,22 +97,23 @@ impl Hitable for Sphere {
     }
 
     fn get_bounding_box(&self, _t0: f32, _t1: f32) -> Arc<Box<AABB>> {
+        let radius = self.radius();
         AABB::new(
-            self.center() - vec3(self.radius(), self.radius(), self.radius()),
-            self.center + vec3(self.radius(), self.radius(), self.radius()),
+            self.center() - vec3(radius, radius, radius),
+            self.center + vec3(radius, radius, radius),
         )
     }
 
     fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>) -> f32 {
-        match self.hit(&Ray::new(origin, v), 0.001_f32, f32::MAX) {
+        match self.hit(&Ray::new(origin, v), 0.001, f32::MAX) {
             Some(_hr) => {
-                let cos_theta_max = (1.0_f32
-                    - (self.radius() * self.radius() / (self.center() - origin).magnitude2()))
-                .sqrt();
-                let solid_angle = 2.0_f32 * f32::consts::PI * (1.0_f32 - cos_theta_max);
-                return 1.0_f32 / solid_angle;
+                let radius2 = self.radius() * self.radius();
+                let centoriginmag2 = (self.center() - origin).magnitude2();
+                let cos_theta_max = (1.0 - (radius2 / centoriginmag2)).sqrt();
+                let solid_angle = 2.0 * f32::consts::PI * (1.0 - cos_theta_max);
+                return 1.0 / solid_angle;
             }
-            None => return 0.0_f32,
+            None => return 0.0,
         }
     }
 

@@ -24,13 +24,8 @@ impl Material for DiffuseLight {
         0.0
     }
 
-    fn emitted(
-        &self,
-        _ray_in: &Ray,
-        _hit_record: &HitRecord,
-        uv_coords: Point2<f32>,
-        p: Vector3<f32>,
-    ) -> Color {
-        self.texture.get_value(uv_coords, p)
+    fn emitted(&self, _ray_in: &Ray, hit_record: &HitRecord) -> Color {
+        self.texture
+            .get_value(hit_record.get_uv_coords(), hit_record.get_p())
     }
 }

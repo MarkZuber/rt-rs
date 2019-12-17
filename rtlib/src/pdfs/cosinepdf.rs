@@ -1,6 +1,7 @@
 use crate::next_rand_f32;
 use crate::pdfs::OrthoNormalBase;
 use crate::pdfs::Pdf;
+use crate::to_unit_vector;
 use crate::{vec3, InnerSpace, Vector3};
 use std::f32;
 
@@ -15,19 +16,14 @@ impl CosinePdf {
     }
 }
 
-// todo: make this common and don't copy/paste it around
-fn to_unit_vector(v: Vector3<f32>) -> Vector3<f32> {
-    v / v.magnitude()
-}
-
 fn get_random_cosine_direction() -> Vector3<f32> {
     let r1 = next_rand_f32();
     let r2 = next_rand_f32();
     let sqrtr2 = r2.sqrt();
-    let z: f32 = (1.0 - r2).sqrt();
-    let phi: f32 = 2.0 * f32::consts::PI * r1;
-    let x: f32 = phi.cos() * 2.0 * sqrtr2;
-    let y: f32 = phi.sin() * 2.0 * sqrtr2;
+    let z = (1.0 - r2).sqrt();
+    let phi = 2.0 * f32::consts::PI * r1;
+    let x = phi.cos() * 2.0 * sqrtr2;
+    let y = phi.sin() * 2.0 * sqrtr2;
 
     vec3(x, y, z)
 }

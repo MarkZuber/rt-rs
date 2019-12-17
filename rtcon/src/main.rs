@@ -32,7 +32,7 @@ fn main() {
 
     let scene = ManySpheresScene::new(); // CornellBoxScene:new();
 
-    let mut render_exec = RenderExec::new(scene, 800, 800, 75, 2000, true);
+    let mut render_exec = RenderExec::new(scene, 300, 300, 30, 1000, true);
     render_exec.execute();
 
     std::fs::create_dir_all("./images").unwrap();

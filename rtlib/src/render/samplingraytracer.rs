@@ -25,21 +25,11 @@ impl RayTracer for SamplingRayTracer {
         // the 0.001 corrects for the "shadow acne"
         match the_scene.get_world().hit(ray, 0.001, std::f32::MAX) {
             Some(hit_record) => {
-                let material: Arc<Box<dyn Material + Send>> = the_scene
+                let material = the_scene
                     .get_materials()
                     .get_material(&hit_record.get_material_id())
                     .unwrap(); // todo: fix up semantics to remove the unwrap here.
-                let emitted = material.emitted(
-                    ray,
-                    &hit_record,
-                    hit_record.get_uv_coords(),
-                    hit_record.get_p(),
-                );
-
-                // if (hr.Material is DiffuseLight)
-                // {
-                //     Debug.WriteLine($"HIT A LIGHT. Emitted: {emitted}");
-                // }
+                let emitted = material.emitted(ray, &hit_record);
 
                 if depth < render_config.ray_trace_depth {
                     let scatter_result = material.scatter(ray, &hit_record);
@@ -98,7 +88,7 @@ impl RayTracer for SamplingRayTracer {
                 return emitted;
             }
             None => {
-                return Color::new(0.1, 0.1, 0.1); // todo: _backgroundFunc(ray);
+                return Color::new(0.01, 0.01, 0.01); // todo: _backgroundFunc(ray);
             }
         }
     }
