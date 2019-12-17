@@ -1,7 +1,6 @@
 use crate::hitables::HitRecord;
 use crate::materials::ScatterResult;
 use crate::render::{Color, Ray};
-use crate::{Point2, Vector3};
 use std::collections::HashMap;
 
 use std::sync::Arc;

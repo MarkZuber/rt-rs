@@ -1,4 +1,4 @@
-// #![feature(test)]
+#![feature(test)]
 
 // #[macro_use]
 extern crate log;
@@ -58,30 +58,22 @@ fn enable_logging(opts: &MainOptions) {
     }
 }
 
-// extern crate test;
+extern crate test;
 
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//     use test::Bencher;
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use test::Bencher;
 
-//     fn create_bench_scene(use_bvh: bool) -> RenderExec {
-//         RenderExec::new(CornellBoxScene::new(), 50, 50, 10, 30, use_bvh, false)
-//     }
+    fn create_bench_scene() -> RenderExec {
+        RenderExec::new(ManySpheresScene::new(), 1, 1, 1, 20, false)
+    }
 
-//     #[bench]
-//     fn bench_with_bvh(b: &mut Bencher) {
-//         let mut render_exec = create_bench_scene(true);
-//         b.iter(|| {
-//             render_exec.execute();
-//         });
-//     }
-
-//     #[bench]
-//     fn bench_no_bvh(b: &mut Bencher) {
-//         let mut render_exec = create_bench_scene(false);
-//         b.iter(|| {
-//             render_exec.execute();
-//         });
-//     }
-// }
+    #[bench]
+    fn bench_render(b: &mut Bencher) {
+        let mut render_exec = create_bench_scene();
+        b.iter(|| {
+            render_exec.execute();
+        });
+    }
+}

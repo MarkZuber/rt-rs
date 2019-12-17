@@ -3,7 +3,7 @@ use crate::materials::{Material, ScatterResult, ThreadMaterial};
 use crate::pdfs::CosinePdf;
 use crate::render::{Color, Ray};
 use crate::textures::ThreadTexture;
-use crate::{to_unit_vector, InnerSpace, Point2, Vector3};
+use crate::{to_unit_vector, InnerSpace};
 use std::f32;
 use std::sync::Arc;
 

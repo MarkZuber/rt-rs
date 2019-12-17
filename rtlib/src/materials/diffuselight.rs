@@ -2,7 +2,6 @@ use crate::hitables::HitRecord;
 use crate::materials::{Material, ScatterResult, ThreadMaterial};
 use crate::render::{Color, Ray};
 use crate::textures::ThreadTexture;
-use crate::{Point2, Vector3};
 use std::sync::Arc;
 
 pub struct DiffuseLight {

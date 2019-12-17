@@ -1,4 +1,3 @@
-use crate::materials::Material;
 use crate::pdfs::{HitablePdf, MixturePdf, Pdf};
 use crate::render::{Color, Ray, RayTracer, RenderConfig, Scene};
 use crate::Vector3;
@@ -28,7 +27,7 @@ impl RayTracer for SamplingRayTracer {
                 let material = the_scene
                     .get_materials()
                     .get_material(&hit_record.get_material_id())
-                    .unwrap(); // todo: fix up semantics to remove the unwrap here.
+                    .unwrap();
                 let emitted = material.emitted(ray, &hit_record);
 
                 if depth < render_config.ray_trace_depth {
