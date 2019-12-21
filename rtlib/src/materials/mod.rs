@@ -1,5 +1,6 @@
 mod dialectric;
 mod diffuselight;
+mod isotropic;
 mod lambertian;
 mod material;
 mod metal;
@@ -7,6 +8,7 @@ mod scatterresult;
 
 pub use self::dialectric::DialectricMaterial;
 pub use self::diffuselight::DiffuseLight;
+pub use self::isotropic::IsotropicMaterial;
 pub use self::lambertian::LambertianMaterial;
 pub use self::material::CompiledMaterial;
 pub use self::material::CompiledMaterials;

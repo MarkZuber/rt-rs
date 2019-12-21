@@ -1,9 +1,11 @@
 use crate::render::Color;
+use image::Pixel;
 
 pub trait PixelBuffer: Sync {
     fn get_width(&self) -> u32;
     fn get_height(&self) -> u32;
     fn set_pixel_color(&mut self, x: u32, y: u32, color: Color);
+    fn get_pixel_color(&self, x: u32, y: u32) -> Color;
 }
 
 #[derive(Debug)]
@@ -30,6 +32,15 @@ impl ImagePixelBuffer {
             ImagePixelBuffer::f32_to_rgb(double_clamped.g()),
             ImagePixelBuffer::f32_to_rgb(double_clamped.b()),
         ])
+    }
+
+    fn pixel_to_color(&self, pixel: &image::Rgb<u8>) -> Color {
+        let channels = pixel.channels();
+        Color::new(
+            (channels[0] as f32) / 255.0,
+            (channels[1] as f32) / 255.0,
+            (channels[2] as f32) / 255.0,
+        )
     }
 
     pub fn save_as_png(&self, output_file_path: &str) {
@@ -60,5 +71,10 @@ impl PixelBuffer for ImagePixelBuffer {
     fn set_pixel_color(&mut self, x: u32, y: u32, color: Color) {
         let pixel = self.clamp_to_pixel(color);
         self.imgbuf.put_pixel(x, self.calculate_actual_y(y), pixel);
+    }
+
+    fn get_pixel_color(&self, x: u32, y: u32) -> Color {
+        let pixel = self.imgbuf.get_pixel(x, y);
+        self.pixel_to_color(pixel)
     }
 }
