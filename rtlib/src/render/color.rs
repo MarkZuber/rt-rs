@@ -7,10 +7,18 @@ pub struct Color {
     b: f32,
 }
 
+#[inline]
 fn clamp_f32(val: f32, min: f32, max: f32) -> f32 {
-    let mut final_val = if val < min { min } else { val };
-    final_val = if final_val > max { max } else { final_val };
-    final_val
+    val.max(min).min(max)
+}
+
+#[inline]
+fn de_nan_value(val: f32) -> f32 {
+    if val.is_nan() || val.is_infinite() {
+        0.0
+    } else {
+        val
+    }
 }
 
 impl Color {
@@ -39,15 +47,19 @@ impl Color {
     }
 
     pub fn clamp(&self) -> Color {
-        let r = clamp_f32(self.r, 0.0, 1.0);
-        let g = clamp_f32(self.g, 0.0, 1.0);
-        let b = clamp_f32(self.b, 0.0, 1.0);
-
-        Color::new(r, g, b)
+        Color {
+            r: clamp_f32(self.r, 0.0, 1.0),
+            g: clamp_f32(self.g, 0.0, 1.0),
+            b: clamp_f32(self.b, 0.0, 1.0),
+        }
     }
 
     pub fn apply_gamma(&self) -> Color {
-        Color::new(self.r.sqrt(), self.g.sqrt(), self.b.sqrt())
+        Color {
+            r: self.r.sqrt(),
+            g: self.g.sqrt(),
+            b: self.b.sqrt(),
+        }
     }
 
     pub fn multiply_by_scalar(&self, scalar: f32) -> Color {
@@ -73,6 +85,14 @@ impl Color {
             b: self.b * other.b,
         }
     }
+
+    pub fn de_nan(&self) -> Color {
+        Color {
+            r: de_nan_value(self.r),
+            g: de_nan_value(self.g),
+            b: de_nan_value(self.b),
+        }
+    }
 }
 
 impl Sum for Color {
@@ -83,7 +103,7 @@ impl Sum for Color {
         let mut curcol = Color::new(0.0, 0.0, 0.0);
 
         for i in iter {
-            curcol = curcol.add(i)
+            curcol = curcol.add(i.de_nan())
         }
 
         curcol

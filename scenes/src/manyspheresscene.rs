@@ -6,7 +6,9 @@ use rtlib::hitables::{
     BvhNode, Cube, FlipNormals, HitableList, RotateY, Sphere, ThreadHitable, Translate, XyRect,
     XzRect, YzRect,
 };
-use rtlib::materials::{CompiledMaterials, DialectricMaterial, LambertianMaterial, MetalMaterial};
+use rtlib::materials::{
+    CompiledMaterials, DialectricMaterial, DiffuseLight, LambertianMaterial, MetalMaterial,
+};
 use rtlib::next_rand_f32;
 use rtlib::render::Color;
 use rtlib::render::{Scene, SceneGenerator};
@@ -25,6 +27,8 @@ impl ManySpheresScene {
 impl SceneGenerator for ManySpheresScene {
     fn create_scene(&self) -> Scene {
         let mut materials: CompiledMaterials = CompiledMaterials::new();
+
+        let light_material = materials.add(DiffuseLight::new(ColorTexture::new(15.0, 15.0, 15.0)));
 
         let checker_texture = CheckerTexture::new(
             ColorTexture::new(0.2, 0.3, 0.1),
@@ -80,7 +84,10 @@ impl SceneGenerator for ManySpheresScene {
             }
         }
 
-        create_scene(hitables, materials, &HitableList::new(), false)
+        let light_rect = XzRect::new(-2.0, 2.0, -2.0, 2.0, 5.0, light_material);
+        hitables.push(light_rect.clone());
+
+        create_scene(hitables, materials, &light_rect, true)
     }
 
     fn create_camera(&self, image_width: u32, image_height: u32) -> ThreadCamera {

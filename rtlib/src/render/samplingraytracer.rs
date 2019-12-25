@@ -25,7 +25,6 @@ impl RayTracer for SamplingRayTracer {
         match the_scene.get_world().hit(ray, 0.001, std::f32::MAX) {
             Some(hit_record) => {
                 let material = the_scene
-                    .get_materials()
                     .get_material(&hit_record.get_material_id())
                     .unwrap();
                 let emitted = material.emitted(ray, &hit_record);
@@ -45,12 +44,12 @@ impl RayTracer for SamplingRayTracer {
                                 );
                             }
                             None => {
-                                let f = Arc::new(HitablePdf::new(
+                                let plight = Arc::new(HitablePdf::new(
                                     the_scene.get_light_hitable(),
                                     hit_record.get_p(),
                                     Vector3::new(0.0, 0.0, 0.0),
                                 ));
-                                let p = MixturePdf::new(f, scatter_result.get_pdf());
+                                let p = MixturePdf::new(plight, scatter_result.get_pdf());
                                 let scattered = Ray::new(hit_record.get_p(), p.generate());
 
                                 let f = Arc::new(HitablePdf::new(
@@ -87,7 +86,8 @@ impl RayTracer for SamplingRayTracer {
                 return emitted;
             }
             None => {
-                return Color::new(0.01, 0.01, 0.01); // todo: _backgroundFunc(ray);
+                return Color::new(0.1, 0.1, 0.1); // todo: _backgroundFunc(ray);
+                                                  // return Color::zero();
             }
         }
     }

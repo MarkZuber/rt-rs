@@ -1,4 +1,5 @@
 use crate::hitables::to_single_array;
+use crate::next_rand_f32;
 use crate::render::Ray;
 use crate::{vec3, Vector3};
 use std::fmt;
@@ -15,6 +16,39 @@ impl fmt::Display for AABB {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use test::Bencher;
+
+    #[bench]
+    fn bench_render(b: &mut Bencher) {
+        let ab = AABB::new(
+            vec3(next_rand_f32(), next_rand_f32(), next_rand_f32()),
+            vec3(next_rand_f32(), next_rand_f32(), next_rand_f32()),
+        );
+        b.iter(|| {
+            ab.hit(
+                &Ray::new(
+                    vec3(next_rand_f32(), next_rand_f32(), next_rand_f32()),
+                    vec3(next_rand_f32(), next_rand_f32(), next_rand_f32()),
+                ),
+                0.0,
+                1.0,
+            );
+        });
+    }
+}
+
+#[inline]
+fn swap_if_first_greater(a: f32, b: f32) -> (f32, f32) {
+    if a > b {
+        (b, a)
+    } else {
+        (a, b)
+    }
+}
+
 impl AABB {
     pub fn new(min: Vector3<f32>, max: Vector3<f32>) -> Arc<Box<AABB>> {
         Arc::new(Box::new(AABB { min, max }))
@@ -24,32 +58,66 @@ impl AABB {
         AABB::new(vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 0.0))
     }
 
-    pub fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> bool {
+    pub fn hit(&self, ray: &Ray, _t_min: f32, _t_max: f32) -> bool {
         info!("aabb::hit()");
-        let minvec = to_single_array(self.min);
-        let maxvec = to_single_array(self.max);
-        let originvec = to_single_array(ray.get_origin());
-        let dirvec = to_single_array(ray.get_direction());
 
-        let mut min = t_min;
-        let mut max = t_max;
+        let (mut txmin, mut txmax) = swap_if_first_greater(
+            (self.min.x - ray.get_origin().x) / ray.get_direction().x,
+            (self.max.x - ray.get_origin().x) / ray.get_direction().x,
+        );
 
-        for a in 0..3 {
-            let inv_d = 1.0 / dirvec[a];
-            let mut t0 = (minvec[a] - originvec[a]) * inv_d;
-            let mut t1 = (maxvec[a] - originvec[a]) * inv_d;
-            if inv_d < 0.0 {
-                let temp = t0;
-                t0 = t1;
-                t1 = temp;
-            }
+        let (tymin, tymax) = swap_if_first_greater(
+            (self.min.y - ray.get_origin().y) / ray.get_direction().y,
+            (self.max.y - ray.get_origin().y) / ray.get_direction().y,
+        );
 
-            min = t0.max(min);
-            max = t1.min(max);
-            if max <= min {
-                return false;
-            }
+        if txmin > tymax || tymin > txmax {
+            return false;
         }
+
+        if tymin > txmin {
+            txmin = tymin;
+        }
+
+        if tymax < txmax {
+            txmax = tymax;
+        }
+
+        let (tzmin, tzmax) = swap_if_first_greater(
+            (self.min.z - ray.get_origin().z) / ray.get_direction().z,
+            (self.max.z - ray.get_origin().z) / ray.get_direction().z,
+        );
+
+        if txmin > tzmax || tzmin > txmax {
+            return false;
+        }
+
+        return true;
+
+        // let minvec = to_single_array(self.min);
+        // let maxvec = to_single_array(self.max);
+        // let originvec = to_single_array(ray.get_origin());
+        // let dirvec = to_single_array(ray.get_direction());
+
+        // let mut min = t_min;
+        // let mut max = t_max;
+
+        // for a in 0..3 {
+        //     let inv_d = 1.0 / dirvec[a];
+        //     let mut t0 = (minvec[a] - originvec[a]) * inv_d;
+        //     let mut t1 = (maxvec[a] - originvec[a]) * inv_d;
+        //     if inv_d < 0.0 {
+        //         let temp = t0;
+        //         t0 = t1;
+        //         t1 = temp;
+        //     }
+
+        //     min = t0.max(min);
+        //     max = t1.min(max);
+        //     if max <= min {
+        //         return false;
+        //     }
+        // }
 
         true
     }

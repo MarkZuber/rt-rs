@@ -37,7 +37,7 @@ impl Pdf for CosinePdf {
         if cosine > 0.0 {
             return cosine / pi;
         }
-        return 1.0;
+        return 0.01;
     }
 
     fn generate(&self) -> Vector3<f32> {

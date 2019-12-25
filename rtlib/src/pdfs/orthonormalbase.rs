@@ -12,16 +12,15 @@ impl OrthoNormalBase {
     }
 
     pub fn from_w(n: Vector3<f32>) -> OrthoNormalBase {
-        let w: Vector3<f32> = to_unit_vector(n);
+        let w = to_unit_vector(n);
 
-        let a: Vector3<f32>;
-        if w.x.abs() > 0.9 {
-            a = Vector3::unit_y();
+        let a = if w.x.abs() > 0.9 {
+            Vector3::unit_y()
         } else {
-            a = Vector3::unit_x();
-        }
-        let v: Vector3<f32> = to_unit_vector(w.cross(a));
-        let u: Vector3<f32> = w.cross(v);
+            Vector3::unit_x()
+        };
+        let v = to_unit_vector(w.cross(a));
+        let u = w.cross(v);
         OrthoNormalBase::new(u, v, w)
     }
 
@@ -36,10 +35,6 @@ impl OrthoNormalBase {
     pub fn w(&self) -> Vector3<f32> {
         self.w
     }
-
-    // pub fn local(&self, a: f32, b: f32, c: f32) -> Vector3<f32> {
-    //     return (a * self.w) + (b * self.v) + (c * self.w);
-    // }
 
     pub fn local(&self, a: Vector3<f32>) -> Vector3<f32> {
         return (a.x * self.u) + (a.y * self.v) + (a.z * self.w);

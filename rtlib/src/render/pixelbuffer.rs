@@ -51,6 +51,7 @@ impl ImagePixelBuffer {
         (val * 255.0) as u8
     }
 
+    #[inline]
     fn calculate_actual_y(&self, y: u32) -> u32 {
         if self.is_y_up {
             return self.get_height() - 1 - y;

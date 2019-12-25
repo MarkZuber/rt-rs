@@ -34,6 +34,10 @@ impl Renderer for PerPixelRenderer {
 
         let ray_tracer = SamplingRayTracer::new();
 
+        let width_f32 = pixel_buffer.get_width() as f32;
+        let height_f32 = pixel_buffer.get_height() as f32;
+        let num_samples_f32 = render_config.num_samples as f32;
+
         for y in 0..pixel_buffer.get_height() {
             for x in 0..pixel_buffer.get_width() {
                 let mut color: Color = (0..render_config.num_samples)
@@ -44,8 +48,8 @@ impl Renderer for PerPixelRenderer {
                         let scene = the_scene.clone();
                         let camera = the_camera.clone();
 
-                        let u = (x as f32 + next_rand_f32()) / pixel_buffer.get_width() as f32;
-                        let v = (y as f32 + next_rand_f32()) / pixel_buffer.get_height() as f32;
+                        let u = (x as f32 + next_rand_f32()) / width_f32;
+                        let v = (y as f32 + next_rand_f32()) / height_f32;
 
                         let ray = camera.get_ray(u, v);
 
@@ -57,7 +61,7 @@ impl Renderer for PerPixelRenderer {
                     .sum();
 
                 color = color
-                    .multiply_by_scalar(1.0 / (render_config.num_samples as f32))
+                    .multiply_by_scalar(1.0 / num_samples_f32)
                     .apply_gamma();
 
                 pixel_buffer.set_pixel_color(x, y, color)

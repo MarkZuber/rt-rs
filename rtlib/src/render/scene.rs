@@ -1,5 +1,5 @@
 use crate::hitables::Hitable;
-use crate::materials::CompiledMaterials;
+use crate::materials::{CompiledMaterials, Material};
 use std::sync::Arc;
 
 pub struct Scene {
@@ -31,5 +31,9 @@ impl Scene {
 
     pub fn get_materials(&self) -> Arc<Box<CompiledMaterials>> {
         self.materials.clone()
+    }
+
+    pub fn get_material(&self, id: &u64) -> Option<Arc<Box<dyn Material + Send>>> {
+        self.materials.get_material(id)
     }
 }
