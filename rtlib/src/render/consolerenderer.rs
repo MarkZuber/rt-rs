@@ -1,5 +1,5 @@
 use crate::cameras::ThreadCamera;
-use crate::render::{ImagePixelBuffer, PerPixelRenderer, RenderConfig, Renderer, Scene};
+use crate::render::{PerPixelRenderer, PixelBuffer, RenderConfig, Renderer, Scene};
 use indicatif::{ProgressBar, ProgressStyle};
 use std::sync::{Arc, Mutex};
 
@@ -14,7 +14,7 @@ impl ConsoleRenderer {
 impl Renderer for ConsoleRenderer {
     fn render(
         &self,
-        pixel_buffer: Arc<Mutex<ImagePixelBuffer>>,
+        pixel_buffer: Arc<Mutex<PixelBuffer>>,
         the_scene: Arc<Box<Scene>>,
         the_camera: ThreadCamera,
         render_config: &RenderConfig,

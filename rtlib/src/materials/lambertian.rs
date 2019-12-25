@@ -1,7 +1,6 @@
 // use crate::get_random_in_unit_sphere;
 use crate::hitables::HitRecord;
 use crate::materials::{Material, ScatterResult, ThreadMaterial};
-use crate::pdfs::CosinePdf;
 use crate::render::{Color, Ray};
 use crate::textures::ThreadTexture;
 use crate::{get_random_in_unit_sphere, to_unit_vector, InnerSpace};

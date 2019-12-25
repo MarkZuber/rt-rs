@@ -1,5 +1,5 @@
 use rtlib::cameras::ThreadCamera;
-use rtlib::render::{ImagePixelBuffer, PerPixelRenderer, RenderConfig, Renderer, Scene};
+use rtlib::render::{PerPixelRenderer, PixelBuffer, RenderConfig, Renderer, Scene};
 use std::sync::{Arc, Mutex};
 
 pub struct GuiRenderer {}
@@ -13,7 +13,7 @@ impl GuiRenderer {
 impl Renderer for GuiRenderer {
     fn render(
         &self,
-        pixel_buffer: Arc<Mutex<ImagePixelBuffer>>,
+        pixel_buffer: Arc<Mutex<PixelBuffer>>,
         the_scene: Arc<Box<Scene>>,
         the_camera: ThreadCamera,
         render_config: &RenderConfig,

@@ -1,7 +1,7 @@
 use crate::cameras::ThreadCamera;
 use crate::next_rand_f32;
 use crate::render::{
-    Color, ImagePixelBuffer, RayTracer, RenderConfig, Renderer, SamplingRayTracer, Scene,
+    Color, PixelBuffer, RayTracer, RenderConfig, Renderer, SamplingRayTracer, Scene,
 };
 use rayon::prelude::{IntoParallelIterator, ParallelIterator};
 use std::sync::{Arc, Mutex};
@@ -21,7 +21,7 @@ impl PerPixelRenderer {
 impl Renderer for PerPixelRenderer {
     fn render(
         &self,
-        pixel_buffer: Arc<Mutex<ImagePixelBuffer>>,
+        pixel_buffer: Arc<Mutex<PixelBuffer>>,
         the_scene: Arc<Box<Scene>>,
         the_camera: ThreadCamera,
         render_config: &RenderConfig,

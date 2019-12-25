@@ -1,9 +1,9 @@
 use crate::cameras::ThreadCamera;
-use crate::render::{ImagePixelBuffer, RenderConfig, Renderer, Scene, SceneGenerator};
+use crate::render::{PixelBuffer, RenderConfig, Renderer, Scene, SceneGenerator};
 use std::sync::{Arc, Mutex};
 
 pub struct RenderExec {
-    pub pixel_buffer: Arc<Mutex<ImagePixelBuffer>>,
+    pub pixel_buffer: Arc<Mutex<PixelBuffer>>,
     scene: Arc<Box<Scene>>,
     camera: ThreadCamera,
     render_config: RenderConfig,
@@ -20,7 +20,7 @@ impl RenderExec {
         num_samples: u32,
         show_progress_bar: bool,
     ) -> RenderExec {
-        let pixel_buffer = Arc::new(Mutex::new(ImagePixelBuffer::new(image_width, image_height)));
+        let pixel_buffer = Arc::new(Mutex::new(PixelBuffer::new(image_width, image_height)));
         let render_config = RenderConfig::new(ray_trace_depth, num_samples, show_progress_bar);
 
         let scene = scene_generator.create_scene();

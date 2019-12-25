@@ -1,7 +1,7 @@
 extern crate piston_window;
 use chrono::prelude::*;
 use piston_window::*;
-use rtlib::render::{ImagePixelBuffer, RenderConfig};
+use rtlib::render::{PixelBuffer, RenderConfig};
 use scenes::*;
 use std::sync::{Arc, Mutex};
 
@@ -26,7 +26,7 @@ fn main() {
 
     let scene_generator = ManySpheresScene::new();
 
-    let pixel_buffer = Arc::new(Mutex::new(ImagePixelBuffer::new(width, height)));
+    let pixel_buffer = Arc::new(Mutex::new(PixelBuffer::new(width, height)));
     let scene = scene_generator.create_scene();
     let camera = scene_generator.create_camera(width, height);
 

@@ -1,23 +1,15 @@
 use crate::render::Color;
 use image::{Pixel, RgbaImage};
 
-// pub trait PixelBuffer: Sync {
-//     fn get_width(&self) -> u32;
-//     fn get_height(&self) -> u32;
-//     fn set_pixel_color(&mut self, x: u32, y: u32, color: Color);
-//     fn get_pixel_color(&self, x: u32, y: u32) -> Color;
-//     fn save_as_png(&self, output_file_path: &str);
-// }
-
 #[derive(Debug)]
-pub struct ImagePixelBuffer {
+pub struct PixelBuffer {
     imgbuf: RgbaImage,
     is_y_up: bool,
 }
 
-impl ImagePixelBuffer {
-    pub fn new(width: u32, height: u32) -> ImagePixelBuffer {
-        ImagePixelBuffer {
+impl PixelBuffer {
+    pub fn new(width: u32, height: u32) -> PixelBuffer {
+        PixelBuffer {
             imgbuf: RgbaImage::new(width, height),
             is_y_up: true,
         }
@@ -26,9 +18,9 @@ impl ImagePixelBuffer {
         let double_clamped = color.clamp();
 
         image::Rgba([
-            ImagePixelBuffer::f32_to_rgb(double_clamped.r()),
-            ImagePixelBuffer::f32_to_rgb(double_clamped.g()),
-            ImagePixelBuffer::f32_to_rgb(double_clamped.b()),
+            PixelBuffer::f32_to_rgb(double_clamped.r()),
+            PixelBuffer::f32_to_rgb(double_clamped.g()),
+            PixelBuffer::f32_to_rgb(double_clamped.b()),
             255,
         ])
     }
