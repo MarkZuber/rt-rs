@@ -1,14 +1,14 @@
-use crate::render::{Color, PixelBuffer};
+use crate::render::{Color, ImagePixelBuffer};
 use crate::textures::Texture;
 use crate::{Point2, Vector3};
 use std::sync::Arc;
 
 pub struct ImageTexture {
-    pixel_buffer: Arc<Box<dyn PixelBuffer + Send>>,
+    pixel_buffer: Arc<Box<ImagePixelBuffer>>,
 }
 
 impl ImageTexture {
-    pub fn new(pixel_buffer: Arc<Box<dyn PixelBuffer + Send>>) -> Arc<Box<ImageTexture>> {
+    pub fn new(pixel_buffer: Arc<Box<ImagePixelBuffer>>) -> Arc<Box<ImageTexture>> {
         Arc::new(Box::new(ImageTexture { pixel_buffer }))
     }
 }

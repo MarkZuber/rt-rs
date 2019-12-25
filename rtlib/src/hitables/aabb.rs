@@ -1,5 +1,3 @@
-use crate::hitables::to_single_array;
-use crate::next_rand_f32;
 use crate::render::Ray;
 use crate::{vec3, Vector3};
 use std::fmt;
@@ -19,6 +17,7 @@ impl fmt::Display for AABB {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::next_rand_f32;
     use test::Bencher;
 
     #[bench]
@@ -91,33 +90,6 @@ impl AABB {
         if txmin > tzmax || tzmin > txmax {
             return false;
         }
-
-        return true;
-
-        // let minvec = to_single_array(self.min);
-        // let maxvec = to_single_array(self.max);
-        // let originvec = to_single_array(ray.get_origin());
-        // let dirvec = to_single_array(ray.get_direction());
-
-        // let mut min = t_min;
-        // let mut max = t_max;
-
-        // for a in 0..3 {
-        //     let inv_d = 1.0 / dirvec[a];
-        //     let mut t0 = (minvec[a] - originvec[a]) * inv_d;
-        //     let mut t1 = (maxvec[a] - originvec[a]) * inv_d;
-        //     if inv_d < 0.0 {
-        //         let temp = t0;
-        //         t0 = t1;
-        //         t1 = temp;
-        //     }
-
-        //     min = t0.max(min);
-        //     max = t1.min(max);
-        //     if max <= min {
-        //         return false;
-        //     }
-        // }
 
         true
     }

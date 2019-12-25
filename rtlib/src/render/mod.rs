@@ -1,4 +1,5 @@
 mod color;
+mod consolerenderer;
 mod perpixelrenderer;
 mod pixelbuffer;
 mod pixeldata;
@@ -12,9 +13,9 @@ mod scene;
 mod scenegenerator;
 
 pub use self::color::Color;
+pub use self::consolerenderer::ConsoleRenderer;
 pub use self::perpixelrenderer::PerPixelRenderer;
 pub use self::pixelbuffer::ImagePixelBuffer;
-pub use self::pixelbuffer::PixelBuffer;
 pub use self::pixeldata::PixelData;
 pub use self::ray::Ray;
 pub use self::raytracer::RayTracer;

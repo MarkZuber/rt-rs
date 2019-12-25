@@ -1,11 +1,9 @@
 use crate::cameras::ThreadCamera;
-use crate::render::{
-    ImagePixelBuffer, PerPixelRenderer, RenderConfig, Renderer, Scene, SceneGenerator,
-};
-use std::sync::Arc;
+use crate::render::{ImagePixelBuffer, RenderConfig, Renderer, Scene, SceneGenerator};
+use std::sync::{Arc, Mutex};
 
 pub struct RenderExec {
-    pixel_buffer: ImagePixelBuffer,
+    pub pixel_buffer: Arc<Mutex<ImagePixelBuffer>>,
     scene: Arc<Box<Scene>>,
     camera: ThreadCamera,
     render_config: RenderConfig,
@@ -15,15 +13,15 @@ pub struct RenderExec {
 impl RenderExec {
     pub fn new(
         scene_generator: Box<dyn SceneGenerator>,
+        renderer: Box<dyn Renderer>,
         image_width: u32,
         image_height: u32,
         ray_trace_depth: u32,
         num_samples: u32,
         show_progress_bar: bool,
     ) -> RenderExec {
-        let pixel_buffer = ImagePixelBuffer::new(image_width, image_height);
+        let pixel_buffer = Arc::new(Mutex::new(ImagePixelBuffer::new(image_width, image_height)));
         let render_config = RenderConfig::new(ray_trace_depth, num_samples, show_progress_bar);
-        let renderer = PerPixelRenderer::new();
 
         let scene = scene_generator.create_scene();
         let camera = scene_generator.create_camera(image_width, image_height);
@@ -38,7 +36,7 @@ impl RenderExec {
 
     pub fn execute(&mut self) {
         self.renderer.render(
-            &mut self.pixel_buffer,
+            self.pixel_buffer.clone(),
             self.scene.clone(),
             self.camera.clone(),
             &self.render_config,
@@ -46,6 +44,7 @@ impl RenderExec {
     }
 
     pub fn save_pixel_buffer(&self, file_path: &str) {
-        self.pixel_buffer.save_as_png(file_path);
+        let pixbuf = self.pixel_buffer.lock().unwrap();
+        pixbuf.save_as_png(file_path);
     }
 }

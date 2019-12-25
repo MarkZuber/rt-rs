@@ -5,7 +5,7 @@ extern crate log;
 extern crate log4rs;
 
 use chrono::prelude::*;
-use rtlib::render::RenderExec;
+use rtlib::render::{ConsoleRenderer, RenderExec};
 use scenes::*;
 use structopt::StructOpt;
 
@@ -33,7 +33,7 @@ fn main() {
     let scene = ManySpheresScene::new();
     // let scene = CornellBoxScene::new();
 
-    let mut render_exec = RenderExec::new(scene, 3072, 1920, 50, 2000, true);
+    let mut render_exec = RenderExec::new(scene, ConsoleRenderer::new(), 800, 800, 50, 20, true);
     render_exec.execute();
 
     std::fs::create_dir_all("./images").unwrap();
@@ -67,7 +67,15 @@ mod tests {
     use test::Bencher;
 
     fn create_bench_scene() -> RenderExec {
-        RenderExec::new(ManySpheresScene::new(), 1, 1, 1, 20, false)
+        RenderExec::new(
+            ManySpheresScene::new(),
+            ConsoleRenderer::new(),
+            1,
+            1,
+            1,
+            20,
+            false,
+        )
     }
 
     #[bench]

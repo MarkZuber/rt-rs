@@ -2,6 +2,7 @@
 
 members = [
     "rtcon",
+    "rtgui",
     "rtlib",
-    "scenes"
+    "scenes",
 ]
