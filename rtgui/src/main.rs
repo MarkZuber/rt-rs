@@ -14,10 +14,10 @@ fn get_datetime_file_marker() -> String {
 }
 
 fn main() {
-    let width: u32 = 800;
-    let height: u32 = 800;
+    let width: u32 = 400;
+    let height: u32 = 400;
     let depth: u32 = 50;
-    let num_samples: u32 = 20;
+    let num_samples: u32 = 400;
 
     let mut window: PistonWindow = WindowSettings::new("rt-rs render", [width, height])
         .exit_on_esc(true)

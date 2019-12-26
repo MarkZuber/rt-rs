@@ -1,6 +1,6 @@
 use crate::render::Color;
 use crate::textures::Texture;
-use crate::textures::{vector_perlin_noise, vector_perlin_turbulence};
+use crate::textures::{vector_perlin_noise, vector_perlin_turbulence, ThreadTexture};
 use crate::{Point2, Vector3};
 use std::sync::Arc;
 
@@ -17,7 +17,7 @@ pub struct VectorNoiseTexture {
 }
 
 impl VectorNoiseTexture {
-    pub fn new(mode: VectorNoiseMode, scale: f32) -> Arc<Box<VectorNoiseTexture>> {
+    pub fn new(mode: VectorNoiseMode, scale: f32) -> ThreadTexture {
         Arc::new(Box::new(VectorNoiseTexture { mode, scale }))
     }
 }
@@ -28,18 +28,18 @@ impl Texture for VectorNoiseTexture {
             VectorNoiseMode::Soft => {
                 return Color::one()
                     .multiply_by_scalar(0.5 * (1.0 + vector_perlin_turbulence(self.scale * p)))
-            } // 2
+            }
             VectorNoiseMode::DarkNoise => {
                 return Color::one().multiply_by_scalar(vector_perlin_noise(self.scale * p))
-            } // 1
+            }
             VectorNoiseMode::DarkTurbulence => {
                 return Color::one().multiply_by_scalar(vector_perlin_turbulence(self.scale * p))
-            } // 4
+            }
             VectorNoiseMode::Marble => {
                 return Color::one().multiply_by_scalar(
                     0.5 * (1.0 + (self.scale * p.z).sin() + (10.0 * vector_perlin_turbulence(p))),
                 )
-            } // 3
+            }
         }
     }
 }

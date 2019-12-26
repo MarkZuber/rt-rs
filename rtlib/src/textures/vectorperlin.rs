@@ -10,7 +10,7 @@ struct VectorPerlinStaticData {
 
 fn vector_perlin_generate() -> Vec<Vector3<f32>> {
     let mut p = vec![vec3(0.0, 0.0, 0.0); 256];
-    for i in 0..256 {
+    for i in 0..p.len() - 1 {
         p[i] = to_unit_vector(vec3(
             -1.0 + (2.0 * next_rand_f32()),
             -1.0 + (2.0 * next_rand_f32()),
@@ -22,8 +22,8 @@ fn vector_perlin_generate() -> Vec<Vector3<f32>> {
 }
 
 fn vector_perlin_generate_perm() -> Vec<usize> {
-    let mut p = vec![0_usize, 256];
-    for i in 0..256 {
+    let mut p = vec![0_usize; 256];
+    for i in 0..p.len() - 1 {
         p[i] = i;
     }
 
@@ -32,7 +32,7 @@ fn vector_perlin_generate_perm() -> Vec<usize> {
 }
 
 fn vector_perlin_permute(p: &mut [usize]) {
-    for i in (1..p.len()).rev() {
+    for i in (1..p.len() - 1).rev() {
         let target = (next_rand_f32() * ((i + 1) as f32)) as usize;
         p.swap(i, target)
     }
@@ -49,7 +49,7 @@ lazy_static! {
     };
 }
 
-fn vector_perlin_interpolate(c: &[[[Vector3<f32>; 2]; 3]; 1], u: f32, v: f32, w: f32) -> f32 {
+fn vector_perlin_interpolate(c: &[[[Vector3<f32>; 3]; 3]; 3], u: f32, v: f32, w: f32) -> f32 {
     let uu = u * u * (3.0 - (2.0 * u));
     let vv = v * v * (3.0 - (2.0 * v));
     let ww = w * w * (3.0 - (2.0 * w));
@@ -76,21 +76,47 @@ pub fn vector_perlin_noise(p: Vector3<f32>) -> f32 {
     let u = p.x - p.x.floor();
     let v = p.y - p.y.floor();
     let w = p.z - p.z.floor();
-    let i = p.x.floor() as usize;
-    let j = p.y.floor() as usize;
-    let k = p.z.floor() as usize;
+    let i = p.x.floor() as i32;
+    let j = p.y.floor() as i32;
+    let k = p.z.floor() as i32;
 
     let zerovec = vec3(0.0, 0.0, 0.0);
 
-    let mut c = [[[zerovec, zerovec], [zerovec, zerovec], [zerovec, zerovec]]];
+    let mut c = [
+        [
+            [zerovec, zerovec, zerovec],
+            [zerovec, zerovec, zerovec],
+            [zerovec, zerovec, zerovec],
+        ],
+        [
+            [zerovec, zerovec, zerovec],
+            [zerovec, zerovec, zerovec],
+            [zerovec, zerovec, zerovec],
+        ],
+        [
+            [zerovec, zerovec, zerovec],
+            [zerovec, zerovec, zerovec],
+            [zerovec, zerovec, zerovec],
+        ],
+    ];
 
     for di in 0..2 {
         for dj in 0..2 {
             for dk in 0..2 {
-                c[di][dj][dk] = VECTOR_PERLIN_DATA.ran_vector[VECTOR_PERLIN_DATA.perm_x
-                    [(i + di) & 255]
-                    ^ VECTOR_PERLIN_DATA.perm_y[(j + dj) & 255]
-                    ^ VECTOR_PERLIN_DATA.perm_z[(k + dk) & 255]];
+                let val1 = VECTOR_PERLIN_DATA.perm_x[((i + di) & 255) as usize];
+                //
+                //
+                let val2 = VECTOR_PERLIN_DATA.perm_y[((j + dj) & 255) as usize];
+                //
+                //
+                //
+                let val3 = VECTOR_PERLIN_DATA.perm_z[((k + dk) & 255) as usize];
+                //
+                //
+                //
+                let val = VECTOR_PERLIN_DATA.ran_vector[val1 ^ val2 ^ val3];
+
+                c[di as usize][dj as usize][dk as usize] = val;
             }
         }
     }

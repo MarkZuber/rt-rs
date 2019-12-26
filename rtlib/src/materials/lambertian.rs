@@ -1,4 +1,3 @@
-// use crate::get_random_in_unit_sphere;
 use crate::hitables::HitRecord;
 use crate::materials::{Material, ScatterResult, ThreadMaterial};
 use crate::render::{Color, Ray};

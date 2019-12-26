@@ -12,7 +12,9 @@ use rtlib::materials::{
 use rtlib::next_rand_f32;
 use rtlib::render::Color;
 use rtlib::render::{Scene, SceneGenerator};
-use rtlib::textures::{CheckerTexture, ColorTexture};
+use rtlib::textures::{
+    CheckerTexture, ColorTexture, NoiseTexture, VectorNoiseMode, VectorNoiseTexture,
+};
 use rtlib::{vec3, InnerSpace, Vector3};
 use std::sync::Arc;
 
@@ -59,7 +61,7 @@ impl SceneGenerator for ManySpheresScene {
                 );
 
                 if (center - vec3(4.0, 0.2, 0.0)).magnitude() > 0.9 {
-                    if choose_mat < 0.8 {
+                    if choose_mat < 0.2 {
                         // diffuse
                         let rand_mat = materials.add(LambertianMaterial::new(ColorTexture::new(
                             next_rand_f32() * next_rand_f32(),
@@ -67,7 +69,22 @@ impl SceneGenerator for ManySpheresScene {
                             next_rand_f32() * next_rand_f32(),
                         )));
                         hitables.push(Sphere::new(center, 0.2, rand_mat));
-                    } else if choose_mat < 0.95 {
+                    } else if choose_mat < 0.4 {
+                        // noise
+                        let noise_mat = materials.add(LambertianMaterial::new(NoiseTexture::new(
+                            true,
+                            next_rand_f32(),
+                        )));
+                        hitables.push(Sphere::new(center, 0.2, noise_mat));
+                    } else if choose_mat < 0.7 {
+                        // vector noise
+                        let vecnoise_mat =
+                            materials.add(LambertianMaterial::new(VectorNoiseTexture::new(
+                                VectorNoiseMode::DarkTurbulence,
+                                next_rand_f32() * 15.0,
+                            )));
+                        hitables.push(Sphere::new(center, 0.2, vecnoise_mat));
+                    } else if choose_mat < 0.9 {
                         let metal_mat = materials.add(MetalMaterial::new(
                             Color::new(
                                 0.5 * (1.0 + next_rand_f32()),

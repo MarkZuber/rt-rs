@@ -11,6 +11,7 @@ pub use self::colortexture::ColorTexture;
 pub use self::imagetexture::ImageTexture;
 pub use self::noisetexture::NoiseTexture;
 pub use self::perlin::perlin_noise;
+pub use self::vectornoisetexture::VectorNoiseMode;
 pub use self::vectornoisetexture::VectorNoiseTexture;
 pub use self::vectorperlin::{vector_perlin_noise, vector_perlin_turbulence};
 

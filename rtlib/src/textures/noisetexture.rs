@@ -1,6 +1,6 @@
 use crate::render::Color;
 use crate::textures::perlin_noise;
-use crate::textures::Texture;
+use crate::textures::{Texture, ThreadTexture};
 use crate::{Point2, Vector3};
 use std::sync::Arc;
 
@@ -10,7 +10,7 @@ pub struct NoiseTexture {
 }
 
 impl NoiseTexture {
-    pub fn new(interpolate: bool, scale: f32) -> Arc<Box<NoiseTexture>> {
+    pub fn new(interpolate: bool, scale: f32) -> ThreadTexture {
         Arc::new(Box::new(NoiseTexture { interpolate, scale }))
     }
 }

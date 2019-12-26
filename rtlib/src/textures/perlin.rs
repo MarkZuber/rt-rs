@@ -14,7 +14,7 @@ fn perlin_generate() -> Vec<f32> {
 
 fn perlin_generate_perm() -> Vec<usize> {
     let mut p = vec![0_usize; 256];
-    for i in 0..256 {
+    for i in 0..p.len() - 1 {
         p[i] = i;
     }
 
@@ -23,7 +23,7 @@ fn perlin_generate_perm() -> Vec<usize> {
 }
 
 fn permute(p: &mut [usize]) {
-    for i in (1..p.len()).rev() {
+    for i in (1..p.len() - 1).rev() {
         let target = (next_rand_f32() * ((i + 1) as f32)) as usize;
         p.swap(i, target)
     }
@@ -46,22 +46,27 @@ pub fn perlin_noise(p: Vector3<f32>, interpolate: bool) -> f32 {
     let mut w = p.z - p.z.floor();
 
     if interpolate {
-        let i = p.x.floor() as usize;
-        let j = p.y.floor() as usize;
-        let k = p.z.floor() as usize;
+        let i = p.x.floor() as i32;
+        let j = p.y.floor() as i32;
+        let k = p.z.floor() as i32;
 
         u = u * u * (3.0 - (2.0 * u));
         v = v * v * (3.0 - (2.0 * v));
         w = w * w * (3.0 - (2.0 * w));
 
-        let mut o = [[[0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]];
+        let mut o = [
+            [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]],
+            [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]],
+            [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]],
+        ];
 
-        for di in 0..2_usize {
-            for dj in 0..2_usize {
-                for dk in 0..2_usize {
-                    o[di][dj][dk] = PERLIN_DATA.ran_float[(PERLIN_DATA.perm_x[((i + di) & 255)])
-                        ^ PERLIN_DATA.perm_y[(j + dj) & 255]
-                        ^ PERLIN_DATA.perm_z[(k + dk) & 255]];
+        for di in 0..2 {
+            for dj in 0..2 {
+                for dk in 0..2 {
+                    o[di][dj][dk] = PERLIN_DATA.ran_float[(PERLIN_DATA.perm_x
+                        [((i + di as i32) & 255) as usize])
+                        ^ PERLIN_DATA.perm_y[((j + dj as i32) & 255) as usize]
+                        ^ PERLIN_DATA.perm_z[((k + dk as i32) & 255) as usize]];
                 }
             }
         }
@@ -76,7 +81,7 @@ pub fn perlin_noise(p: Vector3<f32>, interpolate: bool) -> f32 {
     }
 }
 
-fn trilinear_interpolate(o: &[[[f32; 2]; 3]; 1], u: f32, v: f32, w: f32) -> f32 {
+fn trilinear_interpolate(o: &[[[f32; 3]; 3]; 3], u: f32, v: f32, w: f32) -> f32 {
     let mut accum = 0.0_f32;
     for i in 0..2 {
         let dubi = i as f32;
