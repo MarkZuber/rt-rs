@@ -3,11 +3,13 @@ use crate::render::{PerPixelRenderer, PixelBuffer, RenderConfig, Renderer, Scene
 use indicatif::{ProgressBar, ProgressStyle};
 use std::sync::{Arc, Mutex};
 
-pub struct ConsoleRenderer {}
+pub struct ConsoleRenderer {
+    show_progress_bar: bool,
+}
 
 impl ConsoleRenderer {
-    pub fn new() -> Box<dyn Renderer> {
-        Box::new(ConsoleRenderer {})
+    pub fn new(show_progress_bar: bool) -> Box<dyn Renderer> {
+        Box::new(ConsoleRenderer { show_progress_bar })
     }
 }
 
@@ -19,7 +21,7 @@ impl Renderer for ConsoleRenderer {
         the_camera: ThreadCamera,
         render_config: &RenderConfig,
     ) {
-        let show_bar = Arc::new(render_config.show_progress_bar);
+        let show_bar = Arc::new(self.show_progress_bar);
 
         let image_height: u32;
         {

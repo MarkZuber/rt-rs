@@ -12,19 +12,17 @@ pub struct RenderExec {
 
 impl RenderExec {
     pub fn new(
-        scene_generator: Box<dyn SceneGenerator>,
+        scene_generator: Arc<Box<dyn SceneGenerator + Send>>,
         renderer: Box<dyn Renderer>,
-        image_width: u32,
-        image_height: u32,
-        ray_trace_depth: u32,
-        num_samples: u32,
-        show_progress_bar: bool,
     ) -> RenderExec {
-        let pixel_buffer = Arc::new(Mutex::new(PixelBuffer::new(image_width, image_height)));
-        let render_config = RenderConfig::new(ray_trace_depth, num_samples, show_progress_bar);
+        let render_config = scene_generator.get_render_config();
+        let pixel_buffer = Arc::new(Mutex::new(PixelBuffer::new(
+            render_config.width,
+            render_config.height,
+        )));
 
-        let scene = scene_generator.create_scene();
-        let camera = scene_generator.create_camera(image_width, image_height);
+        let scene = scene_generator.get_scene();
+        let camera = scene_generator.get_camera();
         RenderExec {
             pixel_buffer,
             scene: Arc::new(Box::new(scene)),

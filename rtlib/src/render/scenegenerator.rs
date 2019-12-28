@@ -1,22 +1,25 @@
 use crate::cameras::ThreadCamera;
 use crate::hitables::{BvhNode, HitableList, ThreadHitable};
 use crate::materials::CompiledMaterials;
-use crate::render::Scene;
+use crate::render::{Color, RenderConfig, Scene};
 use std::sync::Arc;
 
-pub trait SceneGenerator {
-    fn create_scene(&self) -> Scene;
-    fn create_camera(&self, image_width: u32, image_height: u32) -> ThreadCamera;
+pub trait SceneGenerator: Sync {
+    fn get_scene(&self) -> Scene;
+    fn get_camera(&self) -> ThreadCamera;
+    fn get_render_config(&self) -> RenderConfig;
+    fn get_background_color(&self) -> Color;
 }
 
 pub fn create_scene(
-    hitables: Vec<ThreadHitable>,
-    materials: CompiledMaterials,
+    hitables: &Vec<ThreadHitable>,
+    materials: Arc<Box<CompiledMaterials>>,
     light_hitable: &ThreadHitable,
+    background_color: Color,
     use_bvh: bool,
 ) -> Scene {
+    let mut hitables = hitables.clone();
     let world = if use_bvh {
-        let mut hitables = hitables;
         let bvh_world = BvhNode::new(&mut hitables, 0.0, 0.0);
         info!("BVH WORLD: {}", bvh_world);
         bvh_world
@@ -24,5 +27,10 @@ pub fn create_scene(
         HitableList::from_vec(hitables)
     };
 
-    Scene::new(world, light_hitable.clone(), Arc::new(Box::new(materials)))
+    Scene::new(
+        world,
+        light_hitable.clone(),
+        materials.clone(),
+        background_color,
+    )
 }

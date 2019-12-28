@@ -1,5 +1,6 @@
 mod color;
 mod consolerenderer;
+mod nffparser;
 mod perpixelrenderer;
 mod pixelbuffer;
 mod pixeldata;
@@ -14,6 +15,7 @@ mod scenegenerator;
 
 pub use self::color::Color;
 pub use self::consolerenderer::ConsoleRenderer;
+pub use self::nffparser::NffParser;
 pub use self::perpixelrenderer::PerPixelRenderer;
 pub use self::pixelbuffer::PixelBuffer;
 pub use self::pixeldata::PixelData;

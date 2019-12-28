@@ -11,23 +11,27 @@ use rtlib::materials::{
 };
 use rtlib::next_rand_f32;
 use rtlib::render::Color;
-use rtlib::render::{Scene, SceneGenerator};
+use rtlib::render::{RenderConfig, Scene, SceneGenerator};
 use rtlib::textures::{
     CheckerTexture, ColorTexture, NoiseTexture, VectorNoiseMode, VectorNoiseTexture,
 };
 use rtlib::{vec3, InnerSpace, Vector3};
 use std::sync::Arc;
 
-pub struct ManySpheresScene {}
+pub struct ManySpheresScene {
+    render_config: RenderConfig,
+}
 
 impl ManySpheresScene {
-    pub fn new() -> Box<dyn SceneGenerator> {
-        Box::new(ManySpheresScene {})
+    pub fn new(render_config: &RenderConfig) -> Arc<Box<dyn SceneGenerator + Send>> {
+        Arc::new(Box::new(ManySpheresScene {
+            render_config: render_config.clone(),
+        }))
     }
 }
 
 impl SceneGenerator for ManySpheresScene {
-    fn create_scene(&self) -> Scene {
+    fn get_scene(&self) -> Scene {
         let mut materials: CompiledMaterials = CompiledMaterials::new();
 
         let light_material = materials.add(DiffuseLight::new(ColorTexture::new(15.0, 15.0, 15.0)));
@@ -69,7 +73,7 @@ impl SceneGenerator for ManySpheresScene {
                             next_rand_f32() * next_rand_f32(),
                         )));
                         hitables.push(Sphere::new(center, 0.2, rand_mat));
-                    } else if choose_mat < 0.4 {
+                    } else if choose_mat < 0.25 {
                         // noise
                         let noise_mat = materials.add(LambertianMaterial::new(NoiseTexture::new(
                             true,
@@ -104,23 +108,37 @@ impl SceneGenerator for ManySpheresScene {
         let light_rect = XzRect::new(-2.0, 2.0, -2.0, 2.0, 5.0, light_material);
         hitables.push(light_rect.clone());
 
-        create_scene(hitables, materials, &light_rect, true)
+        create_scene(
+            &hitables,
+            Arc::new(Box::new(materials)),
+            &light_rect,
+            self.get_background_color(),
+            true,
+        )
     }
 
-    fn create_camera(&self, image_width: u32, image_height: u32) -> ThreadCamera {
+    fn get_camera(&self) -> ThreadCamera {
         let look_from = vec3(24.0, 2.0, 6.0);
         let look_at = Vector3::unit_y();
         let dist_to_focus = (look_from - look_at).magnitude();
-        let aperture = 0.1;
+        let aperture = 0.0;
 
         Arc::new(Box::new(NormalCamera::new(
             look_from,
             look_at,
             Vector3::unit_y(),
             15.0,
-            image_width as f32 / image_height as f32,
+            self.render_config.width as f32 / self.render_config.height as f32,
             aperture,
             dist_to_focus,
         )))
+    }
+
+    fn get_render_config(&self) -> RenderConfig {
+        self.render_config.clone()
+    }
+
+    fn get_background_color(&self) -> Color {
+        Color::new(0.1, 0.1, 0.1)
     }
 }

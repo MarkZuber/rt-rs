@@ -83,12 +83,9 @@ impl RayTracer for SamplingRayTracer {
                     }
                 }
 
-                return emitted;
+                emitted
             }
-            None => {
-                return Color::new(0.1, 0.1, 0.1); // todo: _backgroundFunc(ray);
-                                                  // return Color::zero();
-            }
+            None => the_scene.get_background_color(),
         }
     }
 }

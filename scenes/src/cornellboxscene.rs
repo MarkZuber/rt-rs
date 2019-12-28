@@ -10,21 +10,25 @@ use rtlib::materials::{
     CompiledMaterials, DialectricMaterial, DiffuseLight, LambertianMaterial, MetalMaterial,
 };
 use rtlib::render::Color;
-use rtlib::render::{Scene, SceneGenerator};
+use rtlib::render::{RenderConfig, Scene, SceneGenerator};
 use rtlib::textures::ColorTexture;
 use rtlib::{vec3, Vector3};
 use std::sync::Arc;
 
-pub struct CornellBoxScene {}
+pub struct CornellBoxScene {
+    render_config: RenderConfig,
+}
 
 impl CornellBoxScene {
-    pub fn new() -> Box<dyn SceneGenerator> {
-        Box::new(CornellBoxScene {})
+    pub fn new(render_config: &RenderConfig) -> Arc<Box<dyn SceneGenerator + Send>> {
+        Arc::new(Box::new(CornellBoxScene {
+            render_config: render_config.clone(),
+        }))
     }
 }
 
 impl SceneGenerator for CornellBoxScene {
-    fn create_scene(&self) -> Scene {
+    fn get_scene(&self) -> Scene {
         let mut materials: CompiledMaterials = CompiledMaterials::new();
 
         let light_material = materials.add(DiffuseLight::new(ColorTexture::new(15.0, 15.0, 15.0)));
@@ -55,10 +59,16 @@ impl SceneGenerator for CornellBoxScene {
             glass_sphere,
         ];
 
-        create_scene(hitables, materials, &light_rect, false)
+        create_scene(
+            &hitables,
+            Arc::new(Box::new(materials)),
+            &light_rect,
+            self.get_background_color(),
+            false,
+        )
     }
 
-    fn create_camera(&self, image_width: u32, image_height: u32) -> ThreadCamera {
+    fn get_camera(&self) -> ThreadCamera {
         let look_from = vec3(278.0, 278.0, -800.0);
         let look_at = vec3(278.0, 278.0, 0.0);
         let dist_to_focus = 10.0;
@@ -69,9 +79,17 @@ impl SceneGenerator for CornellBoxScene {
             look_at,
             Vector3::unit_y(),
             40.0,
-            image_width as f32 / image_height as f32,
+            self.render_config.width as f32 / self.render_config.height as f32,
             aperture,
             dist_to_focus,
         )))
+    }
+
+    fn get_render_config(&self) -> RenderConfig {
+        self.render_config.clone()
+    }
+
+    fn get_background_color(&self) -> Color {
+        Color::new(0.1, 0.1, 0.1)
     }
 }

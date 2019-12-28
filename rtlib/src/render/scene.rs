@@ -1,11 +1,13 @@
 use crate::hitables::Hitable;
 use crate::materials::{CompiledMaterials, Material};
+use crate::render::Color;
 use std::sync::Arc;
 
 pub struct Scene {
     world: Arc<Box<dyn Hitable + Send>>,
     light_hitable: Arc<Box<dyn Hitable + Send>>,
     materials: Arc<Box<CompiledMaterials>>,
+    background_color: Color,
 }
 
 impl Scene {
@@ -13,11 +15,13 @@ impl Scene {
         world: Arc<Box<dyn Hitable + Send>>,
         light_hitable: Arc<Box<dyn Hitable + Send>>,
         materials: Arc<Box<CompiledMaterials>>,
+        background_color: Color,
     ) -> Scene {
         Scene {
             world,
             light_hitable,
             materials,
+            background_color,
         }
     }
 
@@ -35,5 +39,9 @@ impl Scene {
 
     pub fn get_material(&self, id: &u64) -> Option<Arc<Box<dyn Material + Send>>> {
         self.materials.get_material(id)
+    }
+
+    pub fn get_background_color(&self) -> Color {
+        self.background_color
     }
 }
