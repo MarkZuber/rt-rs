@@ -4,17 +4,13 @@ use crate::{Point2, Vector3};
 use std::sync::Arc;
 
 pub struct CheckerTexture {
-    t1: Arc<Box<dyn Texture + Send>>,
-    t2: Arc<Box<dyn Texture + Send>>,
+    t1: ThreadTexture,
+    t2: ThreadTexture,
     scale: Vector3<f32>,
 }
 
 impl CheckerTexture {
-    pub fn new(
-        t1: Arc<Box<dyn Texture + Send>>,
-        t2: Arc<Box<dyn Texture + Send>>,
-        scale: Vector3<f32>,
-    ) -> ThreadTexture {
+    pub fn new(t1: ThreadTexture, t2: ThreadTexture, scale: Vector3<f32>) -> ThreadTexture {
         Arc::new(Box::new(CheckerTexture { t1, t2, scale }))
     }
 }

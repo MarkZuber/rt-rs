@@ -15,7 +15,7 @@ impl RayTracer for SamplingRayTracer {
     fn get_ray_color(
         &self,
         ray: &Ray,
-        the_scene: Arc<Box<Scene>>,
+        the_scene: &Scene,
         render_config: &RenderConfig,
         depth: u32,
     ) -> Color {

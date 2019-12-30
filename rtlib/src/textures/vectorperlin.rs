@@ -104,16 +104,8 @@ pub fn vector_perlin_noise(p: Vector3<f32>) -> f32 {
         for dj in 0..2 {
             for dk in 0..2 {
                 let val1 = VECTOR_PERLIN_DATA.perm_x[((i + di) & 255) as usize];
-                //
-                //
                 let val2 = VECTOR_PERLIN_DATA.perm_y[((j + dj) & 255) as usize];
-                //
-                //
-                //
                 let val3 = VECTOR_PERLIN_DATA.perm_z[((k + dk) & 255) as usize];
-                //
-                //
-                //
                 let val = VECTOR_PERLIN_DATA.ran_vector[val1 ^ val2 ^ val3];
 
                 c[di as usize][dj as usize][dk as usize] = val;

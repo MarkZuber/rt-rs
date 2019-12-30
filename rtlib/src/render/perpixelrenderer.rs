@@ -55,7 +55,7 @@ impl Renderer for PerPixelRenderer {
 
                         let ray = camera.get_ray(u, v);
 
-                        let clr = ray_tracer.get_ray_color(&ray, scene, render_config, 0);
+                        let clr = ray_tracer.get_ray_color(&ray, &scene, render_config, 0);
                         info!("end render pixel sample ({}, {})", x, y);
 
                         clr

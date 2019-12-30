@@ -67,7 +67,6 @@ impl Hitable for Sphere {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
         info!("sphere::hit()");
 
-        // if self.get_bounding_box(t_min, t_max).hit(ray, t_min, t_max) {
         let oc = ray.get_origin() - self.center();
         let a = ray.get_direction().dot(ray.get_direction());
         let b = oc.dot(ray.get_direction());
@@ -105,17 +104,11 @@ impl Hitable for Sphere {
                 ));
             }
         }
-        // }
         None
     }
 
     fn get_bounding_box(&self, _t0: f32, _t1: f32) -> Arc<Box<AABB>> {
         self.bounding_box.clone()
-        // let radius = self.radius();
-        // AABB::new(
-        //     self.center - vec3(radius, radius, radius),
-        //     self.center + vec3(radius, radius, radius),
-        // )
     }
 
     fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>) -> f32 {
