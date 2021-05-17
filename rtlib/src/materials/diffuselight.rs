@@ -19,10 +19,6 @@ impl Material for DiffuseLight {
         Arc::new(Box::new(ScatterResult::new_false()))
     }
 
-    fn scattering_pdf(&self, _ray_in: &Ray, _hit_record: &HitRecord, _scattered: &Ray) -> f32 {
-        0.0
-    }
-
     fn emitted(&self, _ray_in: &Ray, hit_record: &HitRecord) -> Color {
         self.texture
             .get_value(hit_record.get_uv_coords(), hit_record.get_p())

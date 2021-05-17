@@ -53,8 +53,4 @@ impl Material for LambertianMaterial {
 
         return cosine / f32::consts::PI;
     }
-
-    fn emitted(&self, _ray_in: &Ray, _hit_record: &HitRecord) -> Color {
-        Color::zero()
-    }
 }

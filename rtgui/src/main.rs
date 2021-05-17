@@ -1,5 +1,3 @@
-#![feature(test)]
-
 extern crate piston_window;
 use chrono::prelude::*;
 use piston_window::*;
@@ -181,7 +179,7 @@ fn enable_logging(opts: &MainOptions) {
     }
 }
 
-extern crate test;
+// extern crate test;
 
 #[cfg(test)]
 mod tests {

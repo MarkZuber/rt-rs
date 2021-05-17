@@ -29,12 +29,4 @@ impl Material for IsotropicMaterial {
             None,
         )))
     }
-
-    fn scattering_pdf(&self, _ray_in: &Ray, _hit_record: &HitRecord, _scattered: &Ray) -> f32 {
-        0.0
-    }
-
-    fn emitted(&self, _ray_in: &Ray, _hit_record: &HitRecord) -> Color {
-        Color::zero()
-    }
 }

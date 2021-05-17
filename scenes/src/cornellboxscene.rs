@@ -31,11 +31,12 @@ impl SceneGenerator for CornellBoxScene {
     fn get_scene(&self) -> Scene {
         let mut materials: CompiledMaterials = CompiledMaterials::new();
 
-        let light_material = materials.add(DiffuseLight::new(ColorTexture::new(15.0, 15.0, 15.0)));
+        let light_material = materials.add(DiffuseLight::new(ColorTexture::new(25.0, 25.0, 25.0)));
 
         let glass = materials.add(DialectricMaterial::new(1.5));
         let red = materials.add(LambertianMaterial::new(ColorTexture::new(0.65, 0.05, 0.05)));
         let white = materials.add(LambertianMaterial::new(ColorTexture::new(0.73, 0.73, 0.73)));
+        let blue = materials.add(LambertianMaterial::new(ColorTexture::new(0.05, 0.05, 0.73)));
         let green = materials.add(LambertianMaterial::new(ColorTexture::new(0.12, 0.45, 0.15)));
         let aluminum = materials.add(MetalMaterial::new(Color::new(0.8, 0.85, 0.88), 0.0));
         let light_rect = XzRect::new(213.0, 343.0, 227.0, 332.0, 554.0, light_material);
@@ -47,7 +48,7 @@ impl SceneGenerator for CornellBoxScene {
             YzRect::new(0.0, 555.0, 0.0, 555.0, 555.0, red),
             FlipNormals::new(light_rect.clone()),
             FlipNormals::new(XzRect::new(0.0, 555.0, 0.0, 555.0, 555.0, white)), // top
-            XzRect::new(0.0, 555.0, 0.0, 555.0, 0.0, white),
+            XzRect::new(0.0, 555.0, 0.0, 555.0, 0.0, blue),
             FlipNormals::new(XyRect::new(0.0, 555.0, 0.0, 555.0, 555.0, white)),
             Translate::new(
                 RotateY::new(
