@@ -99,87 +99,89 @@ fn parse_nff_file(file_path: &str, render_config: &RenderConfig) -> NffParser {
         match looking_for {
             LookingFor::Instruction => {
                 let vec: Vec<&str> = l.split_whitespace().collect();
-                let instruction = vec[0];
+                if vec.len() > 0 {
+                    let instruction = vec[0];
 
-                match instruction {
-                    "b" => {
-                        // background color
-                        background = Color::new(as_f32(vec[1]), as_f32(vec[2]), as_f32(vec[3]));
-                    }
-                    "v" => {
-                        // viewpoint location
-                        looking_for = LookingFor::ViewpointFrom;
-                    }
-                    "l" => {
-                        // positional light
-                        let light_color = if vec.len() == 7 {
-                            Color::new(as_f32(vec[4]), as_f32(vec[5]), as_f32(vec[6]))
-                        } else {
-                            Color::new(1.0, 1.0, 1.0)
-                        };
-                        let light_matid = materials.add(DiffuseLight::new(ColorTexture::new(
-                            light_color.r(),
-                            light_color.g(),
-                            light_color.b(),
-                        )));
-                        lights.push(Sphere::new(
-                            vec3(as_f32(vec[1]), as_f32(vec[2]), as_f32(vec[3])),
-                            0.01,
-                            light_matid,
-                        ));
-                        hitables.push(Sphere::new(
-                            vec3(as_f32(vec[1]), as_f32(vec[2]), as_f32(vec[3])),
-                            0.01,
-                            light_matid,
-                        ));
-                    }
-                    "f" => {
-                        // object material properties
-                        // "f" red green blue Kd Ks Shine T index_of_refraction
-                        // Kd Diffuse component
-                        // Ks Specular
-                        // Shine Phong cosine power for highlights
-                        // T Transmittance (fraction of contribution of the transmitting ray).
-                        // Usually, 0 <= Kd <= 1 and 0 <= Ks <= 1, though it is not required that Kd + Ks = 1. Note that transmitting objects (T > 0) are considered to have two sides for algorithms that need these (normally, objects have one side).
-                        // todo: i don't think i'm assigning the correct values into my solidmaterial yet
-                        current_material_id = materials.add(LambertianMaterial::new(
-                            ColorTexture::new(as_f32(vec[1]), as_f32(vec[2]), as_f32(vec[3])),
-                        ));
-                        // current_material = SolidMaterial::new(
-                        //     as_f64(vec[6]),
-                        //     as_f64(vec[5]),
-                        //     as_f64(vec[8]),
-                        //     as_f64(vec[7]),
-                        //     ColorVector::new(as_f64(vec[1]), as_f64(vec[2]), as_f64(vec[3])),
-                        // );
-                    }
-                    "c" => {
-                        // cone or cylinder
-                    }
-                    "s" => {
-                        // sphere
-                        hitables.push(Sphere::new(
-                            vec3(as_f32(vec[1]), as_f32(vec[2]), as_f32(vec[3])),
-                            as_f32(vec[4]),
-                            current_material_id,
-                        ));
-                    }
-                    "p" => {
-                        // polygon
-                        current_item_counter = as_u32(vec[1]);
-                        poly_vectors = Vec::new();
-                        looking_for = LookingFor::Polygon;
-                    }
-                    "pp" => {
-                        // polygon patch
-                    }
-                    "#" => {
-                        // comment
-                    }
-                    _ => {
-                        // unknown
-                    }
-                };
+                    match instruction {
+                        "b" => {
+                            // background color
+                            background = Color::new(as_f32(vec[1]), as_f32(vec[2]), as_f32(vec[3]));
+                        }
+                        "v" => {
+                            // viewpoint location
+                            looking_for = LookingFor::ViewpointFrom;
+                        }
+                        "l" => {
+                            // positional light
+                            let light_color = if vec.len() == 7 {
+                                Color::new(as_f32(vec[4]), as_f32(vec[5]), as_f32(vec[6]))
+                            } else {
+                                Color::new(1.0, 1.0, 1.0)
+                            };
+                            let light_matid = materials.add(DiffuseLight::new(ColorTexture::new(
+                                light_color.r(),
+                                light_color.g(),
+                                light_color.b(),
+                            )));
+                            lights.push(Sphere::new(
+                                vec3(as_f32(vec[1]), as_f32(vec[2]), as_f32(vec[3])),
+                                0.01,
+                                light_matid,
+                            ));
+                            hitables.push(Sphere::new(
+                                vec3(as_f32(vec[1]), as_f32(vec[2]), as_f32(vec[3])),
+                                0.01,
+                                light_matid,
+                            ));
+                        }
+                        "f" => {
+                            // object material properties
+                            // "f" red green blue Kd Ks Shine T index_of_refraction
+                            // Kd Diffuse component
+                            // Ks Specular
+                            // Shine Phong cosine power for highlights
+                            // T Transmittance (fraction of contribution of the transmitting ray).
+                            // Usually, 0 <= Kd <= 1 and 0 <= Ks <= 1, though it is not required that Kd + Ks = 1. Note that transmitting objects (T > 0) are considered to have two sides for algorithms that need these (normally, objects have one side).
+                            // todo: i don't think i'm assigning the correct values into my solidmaterial yet
+                            current_material_id = materials.add(LambertianMaterial::new(
+                                ColorTexture::new(as_f32(vec[1]), as_f32(vec[2]), as_f32(vec[3])),
+                            ));
+                            // current_material = SolidMaterial::new(
+                            //     as_f64(vec[6]),
+                            //     as_f64(vec[5]),
+                            //     as_f64(vec[8]),
+                            //     as_f64(vec[7]),
+                            //     ColorVector::new(as_f64(vec[1]), as_f64(vec[2]), as_f64(vec[3])),
+                            // );
+                        }
+                        "c" => {
+                            // cone or cylinder
+                        }
+                        "s" => {
+                            // sphere
+                            hitables.push(Sphere::new(
+                                vec3(as_f32(vec[1]), as_f32(vec[2]), as_f32(vec[3])),
+                                as_f32(vec[4]),
+                                current_material_id,
+                            ));
+                        }
+                        "p" => {
+                            // polygon
+                            current_item_counter = as_u32(vec[1]);
+                            poly_vectors = Vec::new();
+                            looking_for = LookingFor::Polygon;
+                        }
+                        "pp" => {
+                            // polygon patch
+                        }
+                        "#" => {
+                            // comment
+                        }
+                        _ => {
+                            // unknown
+                        }
+                    };
+                }
             }
             LookingFor::Polygon => {
                 if current_item_counter > 0 {
