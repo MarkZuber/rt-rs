@@ -39,20 +39,27 @@ impl SceneGenerator for CornellBoxScene {
         let blue = materials.add(LambertianMaterial::new(ColorTexture::new(0.05, 0.05, 0.73)));
         let green = materials.add(LambertianMaterial::new(ColorTexture::new(0.12, 0.45, 0.15)));
         let aluminum = materials.add(MetalMaterial::new(Color::new(0.8, 0.85, 0.88), 0.0));
-        let light_rect = XzRect::new(213.0, 343.0, 227.0, 332.0, 554.0, light_material);
+        let light_rect = FlipNormals::new(XzRect::new(
+            213.0,
+            343.0,
+            227.0,
+            332.0,
+            554.0,
+            light_material,
+        ));
 
         let glass_sphere = Sphere::new(vec3(190.0, 90.0, 190.0), 90.0, glass);
 
         let hitables = vec![
-            FlipNormals::new(YzRect::new(0.0, 555.0, 0.0, 555.0, 0.0, green)),
-            YzRect::new(0.0, 555.0, 0.0, 555.0, 555.0, red),
-            FlipNormals::new(light_rect.clone()),
+            FlipNormals::new(YzRect::new(0.0, 555.0, 0.0, 555.0, 555.0, green)),
+            YzRect::new(0.0, 555.0, 0.0, 555.0, 0.0, red),
+            light_rect.clone(),
             FlipNormals::new(XzRect::new(0.0, 555.0, 0.0, 555.0, 555.0, white)), // top
             XzRect::new(0.0, 555.0, 0.0, 555.0, 0.0, blue),
             FlipNormals::new(XyRect::new(0.0, 555.0, 0.0, 555.0, 555.0, white)),
             Translate::new(
                 RotateY::new(
-                    Cube::new(vec3(0.0, 0.0, 0.0), vec3(165.0, 330.0, 165.0), aluminum),
+                    Cube::new(vec3(0.0, 0.0, 0.0), vec3(165.0, 330.0, 165.0), white),
                     15.0,
                 ),
                 vec3(265.0, 0.0, 295.0),

@@ -3,6 +3,7 @@ use crate::next_rand_f32;
 use crate::render::{
     Color, PixelBuffer, RayTracer, RenderConfig, Renderer, SamplingRayTracer, Scene,
 };
+use crate::{vec3, Vector3};
 use rayon::prelude::{IntoParallelIterator, ParallelIterator};
 use std::sync::{Arc, Mutex};
 
@@ -63,6 +64,7 @@ impl Renderer for PerPixelRenderer {
                     .sum();
 
                 color = color
+                    .de_nan()
                     .multiply_by_scalar(1.0 / num_samples_f32)
                     .apply_gamma();
 

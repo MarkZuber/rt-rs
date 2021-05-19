@@ -98,10 +98,7 @@ impl Hitable for HitableList {
 
     fn random(&self, origin: Vector3<f32>) -> Vector3<f32> {
         let count = self.hitables.len();
-        let index = (next_rand_f32() * (count as f32)).floor() as usize;
-        if index < count {
-            return self.hitables[index].random(origin);
-        }
-        return origin;
+        let index = (next_rand_f32() * (count as f32)).round() as usize;
+        return self.hitables[index].random(origin);
     }
 }

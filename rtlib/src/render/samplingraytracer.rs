@@ -52,20 +52,6 @@ impl RayTracer for SamplingRayTracer {
                                 let p = MixturePdf::new(plight, scatter_result.get_pdf());
                                 let scattered = Ray::new(hit_record.get_p(), p.generate());
 
-                                let f = Arc::new(HitablePdf::new(
-                                    the_scene.get_light_hitable(),
-                                    hit_record.get_p(),
-                                    scattered.get_direction(),
-                                ));
-                                let p = MixturePdf::new(f, scatter_result.get_pdf());
-                                let pdf_value = p.get_value(scattered.get_direction());
-
-                                let mut scattering_pdf =
-                                    material.scattering_pdf(ray, &hit_record, &scattered);
-                                if scattering_pdf < 0.01 {
-                                    scattering_pdf = 0.01;
-                                }
-
                                 let depth_ray_color = self.get_ray_color(
                                     &scattered,
                                     the_scene,

@@ -42,10 +42,10 @@ fn get_random_in_unit_sphere() -> Vector3<f32> {
 
     loop {
         pv = (2.0 * vec3(next_rand_f32(), next_rand_f32(), next_rand_f32())) - vec3(1.0, 1.0, 1.0);
-        if pv.dot(pv) >= 1.0 {
+        if pv.dot(pv) < 1.0 {
             break;
         }
     }
 
-    pv
+    to_unit_vector(pv)
 }
