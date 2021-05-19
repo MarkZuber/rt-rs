@@ -1,9 +1,9 @@
 use crate::hitables::HitRecord;
 use crate::materials::{Material, ScatterResult, ThreadMaterial};
 use crate::pdfs::CosinePdf;
-use crate::render::{Color, Ray};
+use crate::render::Ray;
 use crate::textures::ThreadTexture;
-use crate::{get_random_in_unit_sphere, to_unit_vector, InnerSpace};
+use crate::{to_unit_vector, InnerSpace};
 use std::f32;
 use std::sync::Arc;
 

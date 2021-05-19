@@ -1,9 +1,8 @@
 use crate::get_random_in_unit_sphere;
 use crate::hitables::HitRecord;
 use crate::materials::{Material, ScatterResult, ThreadMaterial};
-use crate::render::{Color, Ray};
+use crate::render::Ray;
 use crate::textures::ThreadTexture;
-use std::f32;
 use std::sync::Arc;
 
 pub struct IsotropicMaterial {

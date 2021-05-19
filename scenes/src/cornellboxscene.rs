@@ -38,7 +38,7 @@ impl SceneGenerator for CornellBoxScene {
         let white = materials.add(LambertianMaterial::new(ColorTexture::new(0.73, 0.73, 0.73)));
         let blue = materials.add(LambertianMaterial::new(ColorTexture::new(0.05, 0.05, 0.73)));
         let green = materials.add(LambertianMaterial::new(ColorTexture::new(0.12, 0.45, 0.15)));
-        let aluminum = materials.add(MetalMaterial::new(Color::new(0.8, 0.85, 0.88), 0.0));
+        let _aluminum = materials.add(MetalMaterial::new(Color::new(0.8, 0.85, 0.88), 0.0));
         let light_rect = FlipNormals::new(XzRect::new(
             213.0,
             343.0,
