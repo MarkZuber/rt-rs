@@ -3,8 +3,8 @@ use rtlib::render::create_scene;
 
 #[allow(unused_imports)]
 use rtlib::hitables::{
-    BvhNode, Cube, FlipNormals, HitableList, RotateY, Sphere, ThreadHitable, Translate, XyRect,
-    XzRect, YzRect,
+    BvhNode, Cube, FlipNormals, HitableList, RotateX, RotateY, RotateZ, Sphere, ThreadHitable,
+    Translate, XyRect, XzRect, YzRect,
 };
 use rtlib::materials::{
     CompiledMaterials, DialectricMaterial, DiffuseLight, LambertianMaterial, MetalMaterial,
@@ -36,7 +36,7 @@ impl SceneGenerator for CornellBoxScene {
         let glass = materials.add(DialectricMaterial::new(1.5));
         let red = materials.add(LambertianMaterial::new(ColorTexture::new(0.65, 0.05, 0.05)));
         let white = materials.add(LambertianMaterial::new(ColorTexture::new(0.73, 0.73, 0.73)));
-        // let blue = materials.add(LambertianMaterial::new(ColorTexture::new(0.05, 0.05, 0.73)));
+        let blue = materials.add(LambertianMaterial::new(ColorTexture::new(0.05, 0.05, 0.73)));
         let noise = materials.add(LambertianMaterial::new(VectorNoiseTexture::new(
             VectorNoiseMode::DarkNoise,
             0.1,
@@ -52,8 +52,6 @@ impl SceneGenerator for CornellBoxScene {
             light_material,
         ));
 
-        let glass_sphere = Sphere::new(vec3(190.0, 90.0, 190.0), 90.0, glass);
-
         let hitables = vec![
             FlipNormals::new(YzRect::new(0.0, 555.0, 0.0, 555.0, 555.0, green)),
             YzRect::new(0.0, 555.0, 0.0, 555.0, 0.0, red),
@@ -63,12 +61,18 @@ impl SceneGenerator for CornellBoxScene {
             FlipNormals::new(XyRect::new(0.0, 555.0, 0.0, 555.0, 555.0, noise)),
             Translate::new(
                 RotateY::new(
-                    Cube::new(vec3(0.0, 0.0, 0.0), vec3(165.0, 330.0, 165.0), white),
+                    RotateX::new(
+                        RotateZ::new(
+                            Cube::new(vec3(0.0, 0.0, 0.0), vec3(165.0, 330.0, 165.0), blue),
+                            -15.0,
+                        ),
+                        15.0,
+                    ),
                     15.0,
                 ),
                 vec3(265.0, 0.0, 295.0),
             ),
-            glass_sphere,
+            Sphere::new(vec3(190.0, 90.0, 190.0), 90.0, glass),
         ];
 
         create_scene(
