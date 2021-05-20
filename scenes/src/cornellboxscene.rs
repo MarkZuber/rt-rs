@@ -11,7 +11,7 @@ use rtlib::materials::{
 };
 use rtlib::render::Color;
 use rtlib::render::{RenderConfig, Scene, SceneGenerator};
-use rtlib::textures::ColorTexture;
+use rtlib::textures::{ColorTexture, VectorNoiseMode, VectorNoiseTexture};
 use rtlib::{vec3, Vector3};
 use std::sync::Arc;
 
@@ -36,7 +36,11 @@ impl SceneGenerator for CornellBoxScene {
         let glass = materials.add(DialectricMaterial::new(1.5));
         let red = materials.add(LambertianMaterial::new(ColorTexture::new(0.65, 0.05, 0.05)));
         let white = materials.add(LambertianMaterial::new(ColorTexture::new(0.73, 0.73, 0.73)));
-        let blue = materials.add(LambertianMaterial::new(ColorTexture::new(0.05, 0.05, 0.73)));
+        // let blue = materials.add(LambertianMaterial::new(ColorTexture::new(0.05, 0.05, 0.73)));
+        let noise = materials.add(LambertianMaterial::new(VectorNoiseTexture::new(
+            VectorNoiseMode::DarkNoise,
+            0.1,
+        )));
         let green = materials.add(LambertianMaterial::new(ColorTexture::new(0.12, 0.45, 0.15)));
         let _aluminum = materials.add(MetalMaterial::new(Color::new(0.8, 0.85, 0.88), 0.0));
         let light_rect = FlipNormals::new(XzRect::new(
@@ -55,8 +59,8 @@ impl SceneGenerator for CornellBoxScene {
             YzRect::new(0.0, 555.0, 0.0, 555.0, 0.0, red),
             light_rect.clone(),
             FlipNormals::new(XzRect::new(0.0, 555.0, 0.0, 555.0, 555.0, white)), // top
-            XzRect::new(0.0, 555.0, 0.0, 555.0, 0.0, blue),
-            FlipNormals::new(XyRect::new(0.0, 555.0, 0.0, 555.0, 555.0, white)),
+            XzRect::new(0.0, 555.0, 0.0, 555.0, 0.0, white),
+            FlipNormals::new(XyRect::new(0.0, 555.0, 0.0, 555.0, 555.0, noise)),
             Translate::new(
                 RotateY::new(
                     Cube::new(vec3(0.0, 0.0, 0.0), vec3(165.0, 330.0, 165.0), white),
