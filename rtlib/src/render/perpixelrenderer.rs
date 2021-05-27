@@ -137,7 +137,8 @@ impl PerPixelRenderer {
                 );
             }
 
-            (self.per_line_callback)(y);
+            (self.per_line_callback)(half_height - y - 1);
+            (self.per_line_callback)(half_height + y);
         }
     }
 }
