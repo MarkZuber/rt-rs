@@ -2,6 +2,7 @@ use crate::hitables::{HitRecord, Hitable, ThreadHitable, AABB};
 use crate::materials::{CompiledMaterials, IsotropicMaterial};
 use crate::next_rand_f32;
 use crate::render::Ray;
+use crate::stats::{record_stat, RenderStat};
 use crate::textures::ThreadTexture;
 use crate::{InnerSpace, Point2, Vector3};
 use std::sync::Arc;
@@ -42,6 +43,7 @@ impl fmt::Display for ConstantMedium {
 impl Hitable for ConstantMedium {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
         info!("ConstantMedium::hit()");
+        record_stat(RenderStat::MediumHit);
 
         if let Some(hit_record1) = self.boundary.hit(ray, -f32::MAX, f32::MAX) {
             if let Some(hit_record2) =

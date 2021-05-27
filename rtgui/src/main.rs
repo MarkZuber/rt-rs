@@ -4,6 +4,8 @@ use piston_window::*;
 use rtlib::render::{
     ConsoleRenderer, NffParser, PixelBuffer, RenderConfig, Renderer, SceneGenerator,
 };
+use rtlib::stats::get_stats;
+use rtlib::stats::reset_stats;
 use scenes::*;
 use std::sync::{Arc, Mutex};
 mod guirenderer;
@@ -71,12 +73,15 @@ fn do_render(
     let scene = scene_generator.get_scene();
     let camera = scene_generator.get_camera();
 
+    reset_stats();
     renderer.render(
         pixel_buffer,
         Arc::new(Box::new(scene)),
         camera,
         render_config,
     );
+
+    println!("Render Stats: {}", get_stats());
 
     if should_save {
         std::fs::create_dir_all("./images").unwrap();

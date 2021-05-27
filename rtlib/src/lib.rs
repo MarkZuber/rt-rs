@@ -10,6 +10,7 @@ pub mod materials;
 pub mod pdfs;
 pub mod render;
 pub mod textures;
+pub mod stats;
 
 pub use cgmath::{vec3, InnerSpace, Point2, Vector3};
 

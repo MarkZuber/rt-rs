@@ -1,5 +1,6 @@
 use crate::hitables::{HitRecord, Hitable, ThreadHitable, AABB};
 use crate::render::Ray;
+use crate::stats::{record_stat, RenderStat};
 use crate::{to_unit_vector, vec3, InnerSpace, Point2, Vector3};
 use std::sync::Arc;
 use std::{f32, fmt};
@@ -40,6 +41,7 @@ impl fmt::Display for Triangle {
 impl Hitable for Triangle {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
         info!("triangle::hit()");
+        record_stat(RenderStat::TriangleHit);
 
         let e1 = self.vertices[1] - self.vertices[0];
         let e2 = self.vertices[2] - self.vertices[0];

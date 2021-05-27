@@ -76,7 +76,7 @@ impl SceneGenerator for CornellBoxScene {
             Arc::new(Box::new(materials)),
             &light_rect,
             self.get_background_color(),
-            false,
+            true,
         )
     }
 

@@ -2,6 +2,7 @@ use crate::hitables::{
     FlipNormals, HitRecord, Hitable, HitableList, ThreadHitable, XyRect, XzRect, YzRect, AABB,
 };
 use crate::render::Ray;
+use crate::stats::{record_stat, RenderStat};
 use crate::Vector3;
 use std::fmt;
 use std::sync::Arc;
@@ -39,6 +40,7 @@ impl fmt::Display for Cube {
 impl Hitable for Cube {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
         info!("Cube::hit()");
+        record_stat(RenderStat::CubeHit);
         self.list.hit(ray, t_min, t_max)
     }
 

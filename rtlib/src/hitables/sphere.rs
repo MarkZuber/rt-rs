@@ -2,6 +2,7 @@ use crate::hitables::{HitRecord, Hitable, ThreadHitable, AABB};
 use crate::pdfs::OrthoNormalBase;
 use crate::random_to_sphere;
 use crate::render::Ray;
+use crate::stats::{record_stat, RenderStat};
 use crate::{to_unit_vector, vec3, InnerSpace, Point2, Vector3};
 use std::sync::Arc;
 use std::{f32, fmt};
@@ -66,6 +67,7 @@ impl fmt::Display for Sphere {
 impl Hitable for Sphere {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
         info!("sphere::hit()");
+        record_stat(RenderStat::SphereHit);
 
         let oc = ray.get_origin() - self.center();
         let a = ray.get_direction().dot(ray.get_direction());

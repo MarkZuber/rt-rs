@@ -1,5 +1,6 @@
 use crate::hitables::{HitRecord, Hitable, ThreadHitable, AABB};
 use crate::render::Ray;
+use crate::stats::{record_stat, RenderStat};
 use crate::{next_rand_f32, vec3, Vector3};
 use std::fmt;
 use std::sync::Arc;
@@ -108,6 +109,8 @@ impl BvhNode {
 impl Hitable for BvhNode {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
         info!("bvhnode::hit()");
+        record_stat(RenderStat::BvhNodeHit);
+
         if !self.bounding_box.hit(ray, t_min, t_max) {
             info!("exiting bvhhode::hit() -- NONE");
             return None;

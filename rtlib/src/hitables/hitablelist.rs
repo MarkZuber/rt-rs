@@ -2,6 +2,7 @@ use crate::hitables::HitRecord;
 use crate::hitables::{Hitable, ThreadHitable, AABB};
 use crate::next_rand_f32;
 use crate::render::Ray;
+use crate::stats::{record_stat, RenderStat};
 use crate::{vec3, Point2, Vector3};
 use std::fmt;
 use std::sync::Arc;
@@ -41,6 +42,8 @@ impl fmt::Display for HitableList {
 impl Hitable for HitableList {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
         info!("hitablelist::hit()");
+        record_stat(RenderStat::HitableListHit);
+
         let mut hit_something: bool = false;
         let mut final_hitrecord: HitRecord = HitRecord::new(
             t_max,

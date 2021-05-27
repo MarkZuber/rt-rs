@@ -3,6 +3,7 @@ use crate::next_rand_f32;
 use crate::render::{
     Color, PixelBuffer, RayTracer, RenderConfig, Renderer, SamplingRayTracer, Scene,
 };
+use crate::stats::reset_stats;
 use rayon::prelude::{IntoParallelIterator, ParallelIterator};
 use std::sync::{Arc, Mutex};
 

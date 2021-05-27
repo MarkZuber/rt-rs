@@ -1,6 +1,7 @@
 use crate::hitables::{HitRecord, Hitable, ThreadHitable, AABB};
 use crate::next_rand_f32;
 use crate::render::Ray;
+use crate::stats::{record_stat, RenderStat};
 use crate::{vec3, InnerSpace, Point2, Vector3};
 use std::sync::Arc;
 use std::{f32, fmt};
@@ -40,6 +41,7 @@ impl fmt::Display for XzRect {
 impl Hitable for XzRect {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
         info!("xzrect::hit()");
+        record_stat(RenderStat::XzRectHit);
         let t = (self.k - ray.get_origin().y) / ray.get_direction().y;
         if t < t_min || t > t_max {
             return None;

@@ -1,4 +1,5 @@
 use crate::render::Ray;
+use crate::stats::{record_stat, RenderStat};
 use crate::{vec3, Vector3};
 use std::fmt;
 use std::sync::Arc;
@@ -59,6 +60,7 @@ impl AABB {
 
     pub fn hit(&self, ray: &Ray, _t_min: f32, _t_max: f32) -> bool {
         info!("aabb::hit()");
+        record_stat(RenderStat::AabbHit);
 
         let (mut txmin, mut txmax) = swap_if_first_greater(
             (self.min.x - ray.get_origin().x) / ray.get_direction().x,
