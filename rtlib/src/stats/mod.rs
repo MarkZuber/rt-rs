@@ -33,23 +33,6 @@ pub struct RenderStats {
     yz_rect_hits: u64,
 }
 
-impl RenderStats {
-    fn reset(&mut self) {
-        self.ray_creates = 0;
-        self.camera_ray_creates = 0;
-        self.aabb_hits = 0;
-        self.bvh_node_hits = 0;
-        self.cube_hits = 0;
-        self.hitable_list_hits = 0;
-        self.medium_hits = 0;
-        self.sphere_hits = 0;
-        self.triangle_hits = 0;
-        self.xy_rect_hits = 0;
-        self.xz_rect_hits = 0;
-        self.yz_rect_hits = 0;
-    }
-}
-
 impl fmt::Display for RenderStats {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let j = serde_json::to_string_pretty(&self).unwrap();
@@ -62,7 +45,12 @@ lazy_static! {
 }
 
 pub fn reset_stats() {
-    GLOBAL_STATS.lock().unwrap().reset();
+    let mut guard = GLOBAL_STATS.lock().unwrap();
+    *guard = RenderStats::default();
+}
+
+pub fn get_stats() -> RenderStats {
+    GLOBAL_STATS.lock().unwrap().clone()
 }
 
 pub fn record_stat(stat: RenderStat) {
@@ -105,8 +93,4 @@ pub fn record_stat(stat: RenderStat) {
             glob.yz_rect_hits += 1;
         }
     }
-}
-
-pub fn get_stats() -> RenderStats {
-    GLOBAL_STATS.lock().unwrap().clone()
 }
