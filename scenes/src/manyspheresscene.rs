@@ -139,6 +139,6 @@ impl SceneGenerator for ManySpheresScene {
     }
 
     fn get_background_color(&self) -> Color {
-        Color::new(0.1, 0.1, 0.1)
+        Color::new(0.2, 0.2, 0.2)
     }
 }

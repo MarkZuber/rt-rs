@@ -33,19 +33,9 @@ impl PerPixelRenderer {
         let mut color: Color = (0..render_config.num_samples)
             .into_par_iter()
             .map(|_sample| {
-                info!("begin render pixel sample ({}, {})", x, y);
-                let scene = the_scene.clone();
-                let camera = the_camera.clone();
-
                 let u = (x as f32 + next_rand_f32()) / width_f32;
                 let v = (y as f32 + next_rand_f32()) / height_f32;
-
-                let ray = camera.get_ray(u, v);
-
-                let clr = ray_tracer.get_ray_color(&ray, &scene, render_config, 0);
-                info!("end render pixel sample ({}, {})", x, y);
-
-                clr
+                ray_tracer.get_ray_color(&the_camera.get_ray(u, v), &the_scene, render_config, 0)
             })
             .sum();
 
@@ -152,12 +142,12 @@ impl Renderer for PerPixelRenderer {
         render_config: &RenderConfig,
     ) {
         // // Quick pre-render
-        // self.render_threaded(
-        //     &pixel_buffer,
-        //     &the_scene,
-        //     &the_camera,
-        //     &RenderConfig::new(render_config.width, render_config.height, 5, 1),
-        // );
+        self.render_threaded(
+            &pixel_buffer,
+            &the_scene,
+            &the_camera,
+            &RenderConfig::new(render_config.width, render_config.height, 5, 1),
+        );
 
         self.render_threaded(&pixel_buffer, &the_scene, &the_camera, render_config);
     }

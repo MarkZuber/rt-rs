@@ -1,6 +1,6 @@
 use serde::Serialize;
 use std::fmt;
-use std::sync::Mutex;
+use std::sync::atomic::{AtomicU64, Ordering};
 
 pub enum RenderStat {
     RayCreate,
@@ -40,57 +40,88 @@ impl fmt::Display for RenderStats {
     }
 }
 
-lazy_static! {
-    static ref GLOBAL_STATS: Mutex<RenderStats> = Mutex::new(RenderStats::default());
-}
-
 pub fn reset_stats() {
-    let mut guard = GLOBAL_STATS.lock().unwrap();
-    *guard = RenderStats::default();
+    STAT_RAY_CREATE.store(0, Ordering::Relaxed);
+    STAT_CAMERA_RAY_CREATES.store(0, Ordering::Relaxed);
+    STAT_AABB_HITS.store(0, Ordering::Relaxed);
+    STAT_BVH_NODE_HITS.store(0, Ordering::Relaxed);
+    STAT_CUBE_HITS.store(0, Ordering::Relaxed);
+    STAT_HITABLE_LIST_HITS.store(0, Ordering::Relaxed);
+    STAT_MEDIUM_HITS.store(0, Ordering::Relaxed);
+    STAT_SPHERE_HITS.store(0, Ordering::Relaxed);
+    STAT_TRIANGLE_HITS.store(0, Ordering::Relaxed);
+    STAT_XY_RECT_HITS.store(0, Ordering::Relaxed);
+    STAT_XZ_RECT_HITS.store(0, Ordering::Relaxed);
+    STAT_YZ_RECT_HITS.store(0, Ordering::Relaxed);
 }
 
 pub fn get_stats() -> RenderStats {
-    GLOBAL_STATS.lock().unwrap().clone()
+    RenderStats {
+        ray_creates: STAT_RAY_CREATE.load(Ordering::Relaxed),
+        camera_ray_creates: STAT_CAMERA_RAY_CREATES.load(Ordering::Relaxed),
+        aabb_hits: STAT_AABB_HITS.load(Ordering::Relaxed),
+        bvh_node_hits: STAT_BVH_NODE_HITS.load(Ordering::Relaxed),
+        cube_hits: STAT_CUBE_HITS.load(Ordering::Relaxed),
+        hitable_list_hits: STAT_HITABLE_LIST_HITS.load(Ordering::Relaxed),
+        medium_hits: STAT_MEDIUM_HITS.load(Ordering::Relaxed),
+        sphere_hits: STAT_SPHERE_HITS.load(Ordering::Relaxed),
+        triangle_hits: STAT_TRIANGLE_HITS.load(Ordering::Relaxed),
+        xy_rect_hits: STAT_XY_RECT_HITS.load(Ordering::Relaxed),
+        xz_rect_hits: STAT_XZ_RECT_HITS.load(Ordering::Relaxed),
+        yz_rect_hits: STAT_YZ_RECT_HITS.load(Ordering::Relaxed),
+    }
 }
 
+static STAT_RAY_CREATE: AtomicU64 = AtomicU64::new(0);
+static STAT_CAMERA_RAY_CREATES: AtomicU64 = AtomicU64::new(0);
+static STAT_AABB_HITS: AtomicU64 = AtomicU64::new(0);
+static STAT_BVH_NODE_HITS: AtomicU64 = AtomicU64::new(0);
+static STAT_CUBE_HITS: AtomicU64 = AtomicU64::new(0);
+static STAT_HITABLE_LIST_HITS: AtomicU64 = AtomicU64::new(0);
+static STAT_MEDIUM_HITS: AtomicU64 = AtomicU64::new(0);
+static STAT_SPHERE_HITS: AtomicU64 = AtomicU64::new(0);
+static STAT_TRIANGLE_HITS: AtomicU64 = AtomicU64::new(0);
+static STAT_XY_RECT_HITS: AtomicU64 = AtomicU64::new(0);
+static STAT_XZ_RECT_HITS: AtomicU64 = AtomicU64::new(0);
+static STAT_YZ_RECT_HITS: AtomicU64 = AtomicU64::new(0);
+
 pub fn record_stat(stat: RenderStat) {
-    let mut glob = GLOBAL_STATS.lock().unwrap();
-    match stat {
-        RenderStat::RayCreate => {
-            glob.ray_creates += 1;
-        }
-        RenderStat::CameraRayCreate => {
-            glob.camera_ray_creates += 1;
-        }
-        RenderStat::AabbHit => {
-            glob.aabb_hits += 1;
-        }
-        RenderStat::BvhNodeHit => {
-            glob.bvh_node_hits += 1;
-        }
-        RenderStat::CubeHit => {
-            glob.cube_hits += 1;
-        }
-        RenderStat::HitableListHit => {
-            glob.hitable_list_hits += 1;
-        }
-        RenderStat::MediumHit => {
-            glob.medium_hits += 1;
-        }
-        RenderStat::SphereHit => {
-            glob.sphere_hits += 1;
-        }
-        RenderStat::TriangleHit => {
-            glob.triangle_hits += 1;
-        }
-        RenderStat::XyRectHit => {
-            glob.xy_rect_hits += 1;
-        }
-        RenderStat::XzRectHit => {
-            glob.xz_rect_hits += 1;
-        }
-        RenderStat::YzRectHit => {
-            glob.yz_rect_hits += 1;
-        }
-    }
+    // match stat {
+    //     RenderStat::RayCreate => {
+    //         STAT_RAY_CREATE.fetch_add(1, Ordering::Relaxed);
+    //     }
+    //     RenderStat::AabbHit => {
+    //         STAT_AABB_HITS.fetch_add(1, Ordering::Relaxed);
+    //     }
+    //     RenderStat::BvhNodeHit => {
+    //         STAT_BVH_NODE_HITS.fetch_add(1, Ordering::Relaxed);
+    //     }
+    //     RenderStat::CameraRayCreate => {
+    //         STAT_CAMERA_RAY_CREATES.fetch_add(1, Ordering::Relaxed);
+    //     }
+    //     RenderStat::CubeHit => {
+    //         STAT_CUBE_HITS.fetch_add(1, Ordering::Relaxed);
+    //     }
+    //     RenderStat::HitableListHit => {
+    //         STAT_HITABLE_LIST_HITS.fetch_add(1, Ordering::Relaxed);
+    //     }
+    //     RenderStat::MediumHit => {
+    //         STAT_MEDIUM_HITS.fetch_add(1, Ordering::Relaxed);
+    //     }
+    //     RenderStat::SphereHit => {
+    //         STAT_SPHERE_HITS.fetch_add(1, Ordering::Relaxed);
+    //     }
+    //     RenderStat::TriangleHit => {
+    //         STAT_TRIANGLE_HITS.fetch_add(1, Ordering::Relaxed);
+    //     }
+    //     RenderStat::XyRectHit => {
+    //         STAT_XY_RECT_HITS.fetch_add(1, Ordering::Relaxed);
+    //     }
+    //     RenderStat::XzRectHit => {
+    //         STAT_XZ_RECT_HITS.fetch_add(1, Ordering::Relaxed);
+    //     }
+    //     RenderStat::YzRectHit => {
+    //         STAT_YZ_RECT_HITS.fetch_add(1, Ordering::Relaxed);
+    //     }
+    // }
 }
