@@ -1,5 +1,6 @@
 use crate::next_rand_f32;
 use crate::pdfs::Pdf;
+use crate::stats::RenderStats;
 use crate::Vector3;
 use std::sync::Arc;
 
@@ -15,10 +16,12 @@ impl MixturePdf {
 }
 
 impl Pdf for MixturePdf {
-    fn get_value(&self, direction: Vector3<f32>) -> f32 {
+    fn get_value(&self, direction: Vector3<f32>, stat: &mut RenderStats) -> f32 {
         match &self.p1 {
-            Some(p1) => (0.5 * self.p0.get_value(direction)) + (0.5 * p1.get_value(direction)),
-            None => self.p0.get_value(direction),
+            Some(p1) => {
+                (0.5 * self.p0.get_value(direction, stat)) + (0.5 * p1.get_value(direction, stat))
+            }
+            None => self.p0.get_value(direction, stat),
         }
     }
 

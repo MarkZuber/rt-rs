@@ -2,7 +2,7 @@ use crate::hitables::{HitRecord, Hitable, ThreadHitable, AABB};
 use crate::materials::{CompiledMaterials, IsotropicMaterial};
 use crate::next_rand_f32;
 use crate::render::Ray;
-use crate::stats::{record_stat, RenderStat};
+use crate::stats::RenderStats;
 use crate::textures::ThreadTexture;
 use crate::{InnerSpace, Point2, Vector3};
 use std::sync::Arc;
@@ -41,14 +41,14 @@ impl fmt::Display for ConstantMedium {
 }
 
 impl Hitable for ConstantMedium {
-    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, stat: &mut RenderStats) -> Option<HitRecord> {
         info!("ConstantMedium::hit()");
-        record_stat(RenderStat::MediumHit);
+        stat.medium_hit();
 
-        if let Some(hit_record1) = self.boundary.hit(ray, -f32::MAX, f32::MAX) {
+        if let Some(hit_record1) = self.boundary.hit(ray, -f32::MAX, f32::MAX, stat) {
             if let Some(hit_record2) =
                 self.boundary
-                    .hit(ray, hit_record1.get_t() + 0.0001, f32::MAX)
+                    .hit(ray, hit_record1.get_t() + 0.0001, f32::MAX, stat)
             {
                 let mut rec1t = hit_record1.get_t();
                 let mut rec2t = hit_record2.get_t();
@@ -86,7 +86,12 @@ impl Hitable for ConstantMedium {
         self.boundary.get_bounding_box(t0, t1)
     }
 
-    fn get_pdf_value(&self, _origin: Vector3<f32>, _v: Vector3<f32>) -> f32 {
+    fn get_pdf_value(
+        &self,
+        _origin: Vector3<f32>,
+        _v: Vector3<f32>,
+        _stat: &mut RenderStats,
+    ) -> f32 {
         1.0
     }
 

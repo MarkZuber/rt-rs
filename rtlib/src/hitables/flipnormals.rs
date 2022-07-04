@@ -1,5 +1,6 @@
 use crate::hitables::{HitRecord, Hitable, ThreadHitable, AABB};
 use crate::render::Ray;
+use crate::stats::RenderStats;
 use crate::Vector3;
 use std::fmt;
 use std::sync::Arc;
@@ -21,9 +22,9 @@ impl fmt::Display for FlipNormals {
 }
 
 impl Hitable for FlipNormals {
-    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, stat: &mut RenderStats) -> Option<HitRecord> {
         info!("flipnormals::hit()");
-        if let Some(hr) = self.hitable.hit(ray, t_min, t_max) {
+        if let Some(hr) = self.hitable.hit(ray, t_min, t_max, stat) {
             return Some(HitRecord::new(
                 hr.get_t(),
                 hr.get_p(),
@@ -35,8 +36,8 @@ impl Hitable for FlipNormals {
         None
     }
 
-    fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>) -> f32 {
-        self.hitable.get_pdf_value(origin, v)
+    fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>, stat: &mut RenderStats) -> f32 {
+        self.hitable.get_pdf_value(origin, v, stat)
     }
     fn random(&self, origin: Vector3<f32>) -> Vector3<f32> {
         self.hitable.random(origin)

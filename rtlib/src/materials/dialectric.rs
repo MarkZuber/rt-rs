@@ -2,6 +2,7 @@ use crate::hitables::HitRecord;
 use crate::materials::{reflect, refract, Material, ScatterResult, ThreadMaterial};
 use crate::next_rand_f32;
 use crate::render::{Color, Ray};
+use crate::stats::RenderStats;
 use crate::{vec3, InnerSpace};
 use std::f32;
 use std::sync::Arc;
@@ -23,7 +24,12 @@ impl DialectricMaterial {
 }
 
 impl Material for DialectricMaterial {
-    fn scatter(&self, ray_in: &Ray, hit_record: &HitRecord) -> Arc<Box<ScatterResult>> {
+    fn scatter(
+        &self,
+        ray_in: &Ray,
+        hit_record: &HitRecord,
+        stat: &mut RenderStats,
+    ) -> Arc<Box<ScatterResult>> {
         let reflected = reflect(ray_in.get_direction(), hit_record.get_normal());
         let attenuation = Color::one();
         let (outward_normal, ni_over_nt, cosine) =
@@ -49,12 +55,12 @@ impl Material for DialectricMaterial {
             let reflect_probability =
                 DialectricMaterial::calculate_schlick_approximation(cosine, self.refraction_index);
             if next_rand_f32() < reflect_probability {
-                Ray::new(hit_record.get_p(), reflected)
+                Ray::new(hit_record.get_p(), reflected, stat)
             } else {
-                Ray::new(hit_record.get_p(), refracted)
+                Ray::new(hit_record.get_p(), refracted, stat)
             }
         } else {
-            Ray::new(hit_record.get_p(), reflected)
+            Ray::new(hit_record.get_p(), reflected, stat)
         };
 
         Arc::new(Box::new(ScatterResult::new(

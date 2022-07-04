@@ -2,7 +2,7 @@ use crate::hitables::{HitRecord, Hitable, ThreadHitable, AABB};
 use crate::pdfs::OrthoNormalBase;
 use crate::random_to_sphere;
 use crate::render::Ray;
-use crate::stats::{record_stat, RenderStat};
+use crate::stats::RenderStats;
 use crate::{to_unit_vector, vec3, InnerSpace, Point2, Vector3};
 use std::sync::Arc;
 use std::{f32, fmt};
@@ -65,9 +65,9 @@ impl fmt::Display for Sphere {
 }
 
 impl Hitable for Sphere {
-    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, stat: &mut RenderStats) -> Option<HitRecord> {
         info!("sphere::hit()");
-        record_stat(RenderStat::SphereHit);
+        stat.sphere_hit();
 
         let oc = ray.get_origin() - self.center();
         let a = ray.get_direction().dot(ray.get_direction());
@@ -113,8 +113,8 @@ impl Hitable for Sphere {
         self.bounding_box.clone()
     }
 
-    fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>) -> f32 {
-        match self.hit(&Ray::new(origin, v), 0.001, f32::MAX) {
+    fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>, stat: &mut RenderStats) -> f32 {
+        match self.hit(&Ray::new(origin, v, stat), 0.001, f32::MAX, stat) {
             Some(_hr) => {
                 let centoriginmag2 = (self.center() - origin).magnitude2();
                 let cos_theta_max = (1.0 - (self.radius_sq / centoriginmag2)).sqrt();

@@ -1,5 +1,6 @@
 use crate::hitables::{to_single_array, HitRecord, Hitable, ThreadHitable, AABB};
 use crate::render::Ray;
+use crate::stats::RenderStats;
 use crate::{vec3, Vector3};
 use std::sync::Arc;
 use std::{f32, fmt};
@@ -63,7 +64,7 @@ impl fmt::Display for RotateY {
 }
 
 impl Hitable for RotateY {
-    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, stat: &mut RenderStats) -> Option<HitRecord> {
         info!("rotatey::hit()");
         let mut origin = to_single_array(ray.get_origin());
         let mut dir = to_single_array(ray.get_direction());
@@ -76,8 +77,9 @@ impl Hitable for RotateY {
         let rotated_ray = Ray::new(
             vec3(origin[0], origin[1], origin[2]),
             vec3(dir[0], dir[1], dir[2]),
+            stat,
         );
-        if let Some(hit_record) = self.hitable.hit(&rotated_ray, t_min, t_max) {
+        if let Some(hit_record) = self.hitable.hit(&rotated_ray, t_min, t_max, stat) {
             let mut p = to_single_array(hit_record.get_p());
             let mut normal = to_single_array(hit_record.get_normal());
             p[0] =
@@ -101,8 +103,8 @@ impl Hitable for RotateY {
         None
     }
 
-    fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>) -> f32 {
-        self.hitable.get_pdf_value(origin, v)
+    fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>, stat: &mut RenderStats) -> f32 {
+        self.hitable.get_pdf_value(origin, v, stat)
     }
     fn random(&self, origin: Vector3<f32>) -> Vector3<f32> {
         self.hitable.random(origin)

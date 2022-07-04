@@ -1,5 +1,6 @@
 use crate::cameras::ThreadCamera;
 use crate::render::{PixelBuffer, RenderConfig, Scene};
+use crate::stats::RenderStats;
 use std::sync::{Arc, Mutex};
 
 pub trait Renderer {
@@ -9,5 +10,5 @@ pub trait Renderer {
         the_scene: Arc<Box<Scene>>,
         the_camera: ThreadCamera,
         render_config: &RenderConfig,
-    );
+    ) -> RenderStats;
 }

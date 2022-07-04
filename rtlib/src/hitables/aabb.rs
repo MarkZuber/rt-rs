@@ -1,5 +1,5 @@
 use crate::render::Ray;
-use crate::stats::{record_stat, RenderStat};
+use crate::stats::RenderStats;
 use crate::{vec3, Vector3};
 use std::fmt;
 use std::sync::Arc;
@@ -15,30 +15,30 @@ impl fmt::Display for AABB {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::next_rand_f32;
-    use test::Bencher;
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use crate::next_rand_f32;
+//     use test::Bencher;
 
-    #[bench]
-    fn bench_render(b: &mut Bencher) {
-        let ab = AABB::new(
-            vec3(next_rand_f32(), next_rand_f32(), next_rand_f32()),
-            vec3(next_rand_f32(), next_rand_f32(), next_rand_f32()),
-        );
-        b.iter(|| {
-            ab.hit(
-                &Ray::new(
-                    vec3(next_rand_f32(), next_rand_f32(), next_rand_f32()),
-                    vec3(next_rand_f32(), next_rand_f32(), next_rand_f32()),
-                ),
-                0.0,
-                1.0,
-            );
-        });
-    }
-}
+//     #[bench]
+//     fn bench_render(b: &mut Bencher) {
+//         let ab = AABB::new(
+//             vec3(next_rand_f32(), next_rand_f32(), next_rand_f32()),
+//             vec3(next_rand_f32(), next_rand_f32(), next_rand_f32()),
+//         );
+//         b.iter(|| {
+//             ab.hit(
+//                 &Ray::new(
+//                     vec3(next_rand_f32(), next_rand_f32(), next_rand_f32()),
+//                     vec3(next_rand_f32(), next_rand_f32(), next_rand_f32()),
+//                 ),
+//                 0.0,
+//                 1.0,
+//             );
+//         });
+//     }
+// }
 
 #[inline]
 fn swap_if_first_greater(a: f32, b: f32) -> (f32, f32) {
@@ -58,9 +58,9 @@ impl AABB {
         AABB::new(vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 0.0))
     }
 
-    pub fn hit(&self, ray: &Ray, _t_min: f32, _t_max: f32) -> bool {
+    pub fn hit(&self, ray: &Ray, _t_min: f32, _t_max: f32, stat: &mut RenderStats) -> bool {
         info!("aabb::hit()");
-        record_stat(RenderStat::AabbHit);
+        stat.aabb_hit();
 
         let (mut txmin, mut txmax) = swap_if_first_greater(
             (self.min.x - ray.get_origin().x) / ray.get_direction().x,

@@ -1,6 +1,7 @@
 use crate::hitables::HitRecord;
 use crate::materials::ScatterResult;
 use crate::render::{Color, Ray};
+use crate::stats::RenderStats;
 use std::collections::HashMap;
 
 use std::sync::Arc;
@@ -8,7 +9,12 @@ use std::sync::Arc;
 pub type ThreadMaterial = Arc<Box<dyn Material + Send>>;
 
 pub trait Material: Sync {
-    fn scatter(&self, ray_in: &Ray, hit_record: &HitRecord) -> Arc<Box<ScatterResult>>;
+    fn scatter(
+        &self,
+        ray_in: &Ray,
+        hit_record: &HitRecord,
+        stat: &mut RenderStats,
+    ) -> Arc<Box<ScatterResult>>;
     fn scattering_pdf(&self, _ray_in: &Ray, _hit_record: &HitRecord, _scattered: &Ray) -> f32 {
         0.0
     }

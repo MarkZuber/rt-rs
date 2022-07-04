@@ -1,6 +1,7 @@
 use crate::hitables::HitRecord;
 use crate::materials::{Material, ScatterResult, ThreadMaterial};
 use crate::render::{Color, Ray};
+use crate::stats::RenderStats;
 use crate::textures::ThreadTexture;
 use crate::InnerSpace;
 use std::sync::Arc;
@@ -16,7 +17,12 @@ impl DiffuseLight {
 }
 
 impl Material for DiffuseLight {
-    fn scatter(&self, _ray_in: &Ray, _hit_record: &HitRecord) -> Arc<Box<ScatterResult>> {
+    fn scatter(
+        &self,
+        _ray_in: &Ray,
+        _hit_record: &HitRecord,
+        _stat: &mut RenderStats,
+    ) -> Arc<Box<ScatterResult>> {
         Arc::new(Box::new(ScatterResult::new_false()))
     }
 

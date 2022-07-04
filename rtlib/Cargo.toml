@@ -16,4 +16,5 @@ log = "*"
 lazy_static = "*"
 serde = "*"
 serde_json = "*"
+num-format = "*"
 

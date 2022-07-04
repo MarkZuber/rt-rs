@@ -1,7 +1,7 @@
 use crate::hitables::{HitRecord, Hitable, ThreadHitable, AABB};
 use crate::next_rand_f32;
 use crate::render::Ray;
-use crate::stats::{record_stat, RenderStat};
+use crate::stats::RenderStats;
 use crate::{vec3, InnerSpace, Point2, Vector3};
 use std::sync::Arc;
 use std::{f32, fmt};
@@ -39,9 +39,9 @@ impl fmt::Display for XyRect {
 }
 
 impl Hitable for XyRect {
-    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, stat: &mut RenderStats) -> Option<HitRecord> {
         info!("xyrect::hit()");
-        record_stat(RenderStat::XyRectHit);
+        stat.xy_rect_hit();
         let t = (self.k - ray.get_origin().z) / ray.get_direction().z;
         if t < t_min || t > t_max {
             return None;
@@ -72,8 +72,8 @@ impl Hitable for XyRect {
         )
     }
 
-    fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>) -> f32 {
-        if let Some(hr) = self.hit(&Ray::new(origin, v), 0.001_f32, f32::MAX) {
+    fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>, stat: &mut RenderStats) -> f32 {
+        if let Some(hr) = self.hit(&Ray::new(origin, v, stat), 0.001_f32, f32::MAX, stat) {
             let area = (self.x1 - self.x0) * (self.y1 - self.y0);
             let distance_squared = hr.t * hr.t * v.magnitude2();
             let cosine = (v.dot(hr.get_normal()) / v.magnitude()).abs();

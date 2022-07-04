@@ -1,6 +1,6 @@
 use crate::hitables::{HitRecord, Hitable, ThreadHitable, AABB};
 use crate::render::Ray;
-use crate::stats::{record_stat, RenderStat};
+use crate::stats::RenderStats;
 use crate::{to_unit_vector, vec3, InnerSpace, Point2, Vector3};
 use std::sync::Arc;
 use std::{f32, fmt};
@@ -39,9 +39,9 @@ impl fmt::Display for Triangle {
 }
 
 impl Hitable for Triangle {
-    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, stat: &mut RenderStats) -> Option<HitRecord> {
         info!("triangle::hit()");
-        record_stat(RenderStat::TriangleHit);
+        stat.triangle_hit();
 
         let e1 = self.vertices[1] - self.vertices[0];
         let e2 = self.vertices[2] - self.vertices[0];
@@ -108,7 +108,12 @@ impl Hitable for Triangle {
         AABB::new(min, max)
     }
 
-    fn get_pdf_value(&self, _origin: Vector3<f32>, _v: Vector3<f32>) -> f32 {
+    fn get_pdf_value(
+        &self,
+        _origin: Vector3<f32>,
+        _v: Vector3<f32>,
+        _stat: &mut RenderStats,
+    ) -> f32 {
         1.0
     }
 

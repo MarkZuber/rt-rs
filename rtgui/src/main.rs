@@ -4,8 +4,6 @@ use piston_window::*;
 use rtlib::render::{
     ConsoleRenderer, NffParser, PixelBuffer, RenderConfig, Renderer, SceneGenerator,
 };
-use rtlib::stats::get_stats;
-use rtlib::stats::reset_stats;
 use scenes::*;
 use std::sync::{Arc, Mutex};
 mod guirenderer;
@@ -77,11 +75,9 @@ fn do_render(
     let scene = scene_generator.get_scene();
     let camera = scene_generator.get_camera();
 
-    reset_stats();
-
     let start_time = Utc::now();
 
-    renderer.render(
+    let render_stats = renderer.render(
         pixel_buffer,
         Arc::new(Box::new(scene)),
         camera,
@@ -93,7 +89,7 @@ fn do_render(
     let elapsed_time = end_time - start_time;
     println!("Render time: {:?}", elapsed_time);
 
-    // println!("Render Stats: {}", get_stats());
+    println!("Render Stats: {}", render_stats);
 
     if should_save {
         std::fs::create_dir_all("./images").unwrap();
@@ -230,24 +226,24 @@ fn enable_logging(opts: &MainOptions) {
 
 // extern crate test;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use rtlib::render::RenderExec;
-    use test::Bencher;
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use rtlib::render::RenderExec;
+//     use test::Bencher;
 
-    fn create_bench_scene() -> RenderExec {
-        RenderExec::new(
-            ManySpheresScene::new(&RenderConfig::new(1, 1, 1, 20)),
-            ConsoleRenderer::new(false),
-        )
-    }
+//     fn create_bench_scene() -> RenderExec {
+//         RenderExec::new(
+//             ManySpheresScene::new(&RenderConfig::new(1, 1, 1, 20)),
+//             ConsoleRenderer::new(false),
+//         )
+//     }
 
-    #[bench]
-    fn bench_render(b: &mut Bencher) {
-        let mut render_exec = create_bench_scene();
-        b.iter(|| {
-            render_exec.execute();
-        });
-    }
-}
+//     #[bench]
+//     fn bench_render(b: &mut Bencher) {
+//         let mut render_exec = create_bench_scene();
+//         b.iter(|| {
+//             render_exec.execute();
+//         });
+//     }
+// }

@@ -1,5 +1,6 @@
-use crate::stats::{record_stat, RenderStat};
 use cgmath::Vector3;
+
+use crate::stats::RenderStats;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Ray {
@@ -8,8 +9,8 @@ pub struct Ray {
 }
 
 impl Ray {
-    pub fn new(origin: Vector3<f32>, direction: Vector3<f32>) -> Ray {
-        record_stat(RenderStat::RayCreate);
+    pub fn new(origin: Vector3<f32>, direction: Vector3<f32>, stat: &mut RenderStats) -> Ray {
+        stat.ray_create();
         Ray { origin, direction }
     }
 

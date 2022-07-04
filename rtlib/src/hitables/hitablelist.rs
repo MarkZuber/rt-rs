@@ -2,7 +2,7 @@ use crate::hitables::HitRecord;
 use crate::hitables::{Hitable, ThreadHitable, AABB};
 use crate::next_rand_f32;
 use crate::render::Ray;
-use crate::stats::{record_stat, RenderStat};
+use crate::stats::RenderStats;
 use crate::{vec3, Point2, Vector3};
 use std::fmt;
 use std::sync::Arc;
@@ -40,9 +40,9 @@ impl fmt::Display for HitableList {
 }
 
 impl Hitable for HitableList {
-    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, stat: &mut RenderStats) -> Option<HitRecord> {
         info!("hitablelist::hit()");
-        record_stat(RenderStat::HitableListHit);
+        stat.hitable_list_hit();
 
         let mut hit_something: bool = false;
         let mut final_hitrecord: HitRecord = HitRecord::new(
@@ -54,7 +54,7 @@ impl Hitable for HitableList {
         );
 
         for i in 0..self.size() {
-            let hit_record_option = self.hitables[i].hit(ray, t_min, final_hitrecord.t);
+            let hit_record_option = self.hitables[i].hit(ray, t_min, final_hitrecord.t, stat);
             match hit_record_option {
                 Some(hit_record) => {
                     hit_something = true;
@@ -89,11 +89,11 @@ impl Hitable for HitableList {
         b
     }
 
-    fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>) -> f32 {
+    fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>, stat: &mut RenderStats) -> f32 {
         let weight = 1.0 / (self.hitables.len() as f32);
         let mut sum = 0.0;
         for i in 0..self.hitables.len() {
-            sum += weight * self.hitables[i].get_pdf_value(origin, v);
+            sum += weight * self.hitables[i].get_pdf_value(origin, v, stat);
         }
 
         sum

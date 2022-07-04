@@ -29,6 +29,7 @@ pub use self::xzrect::XzRect;
 pub use self::yzrect::YzRect;
 
 use crate::render::Ray;
+use crate::stats::RenderStats;
 use crate::Vector3;
 use std::fmt;
 use std::sync::Arc;
@@ -36,9 +37,10 @@ use std::sync::Arc;
 pub type ThreadHitable = Arc<Box<dyn Hitable + Send>>;
 
 pub trait Hitable: Sync + fmt::Display {
-    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord>;
+    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, stat: &mut RenderStats) -> Option<HitRecord>;
     fn get_bounding_box(&self, t0: f32, t1: f32) -> Arc<Box<AABB>>;
-    fn get_pdf_value(&self, _origin: Vector3<f32>, _v: Vector3<f32>) -> f32;
+    fn get_pdf_value(&self, _origin: Vector3<f32>, _v: Vector3<f32>, stat: &mut RenderStats)
+        -> f32;
     fn random(&self, _origin: Vector3<f32>) -> Vector3<f32>;
 }
 

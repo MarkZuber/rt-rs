@@ -1,7 +1,7 @@
 use crate::cameras::Camera;
 use crate::get_random_in_unit_sphere;
 use crate::render::Ray;
-use crate::stats::{record_stat, RenderStat};
+use crate::stats::RenderStats;
 use crate::{InnerSpace, Vector3};
 
 pub struct NormalCamera {
@@ -52,16 +52,17 @@ impl NormalCamera {
 }
 
 impl Camera for NormalCamera {
-    fn get_ray(&self, s: f32, t: f32) -> Ray {
+    fn get_ray(&self, s: f32, t: f32, stat: &mut RenderStats) -> Ray {
         let rd = self.lens_radius * get_random_in_unit_sphere();
         let offset = (self.u * rd.x) + (self.v * rd.y);
-        record_stat(RenderStat::CameraRayCreate);
+        stat.camera_ray_create();
 
         Ray::new(
             self.origin + offset,
             self.lower_left_corner + (s * self.horizontal) + (t * self.vertical)
                 - self.origin
                 - offset,
+            stat,
         )
     }
 }

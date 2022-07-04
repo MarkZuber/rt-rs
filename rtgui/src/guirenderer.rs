@@ -1,5 +1,6 @@
 use rtlib::cameras::ThreadCamera;
 use rtlib::render::{PerPixelRenderer, PixelBuffer, RenderConfig, Renderer, Scene};
+use rtlib::stats::RenderStats;
 use std::sync::{Arc, Mutex};
 
 pub struct GuiRenderer {}
@@ -17,8 +18,8 @@ impl Renderer for GuiRenderer {
         the_scene: Arc<Box<Scene>>,
         the_camera: ThreadCamera,
         render_config: &RenderConfig,
-    ) {
+    ) -> RenderStats {
         let rend = PerPixelRenderer::new(Arc::new(move |_yval| {}));
-        rend.render(pixel_buffer, the_scene, the_camera, render_config);
+        rend.render(pixel_buffer, the_scene, the_camera, render_config)
     }
 }

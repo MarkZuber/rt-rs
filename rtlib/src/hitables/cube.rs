@@ -2,7 +2,7 @@ use crate::hitables::{
     FlipNormals, HitRecord, Hitable, HitableList, ThreadHitable, XyRect, XzRect, YzRect, AABB,
 };
 use crate::render::Ray;
-use crate::stats::{record_stat, RenderStat};
+use crate::stats::RenderStats;
 use crate::Vector3;
 use std::fmt;
 use std::sync::Arc;
@@ -38,14 +38,14 @@ impl fmt::Display for Cube {
 }
 
 impl Hitable for Cube {
-    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, stat: &mut RenderStats) -> Option<HitRecord> {
         info!("Cube::hit()");
-        record_stat(RenderStat::CubeHit);
-        self.list.hit(ray, t_min, t_max)
+        stat.cube_hit();
+        self.list.hit(ray, t_min, t_max, stat)
     }
 
-    fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>) -> f32 {
-        self.list.get_pdf_value(origin, v)
+    fn get_pdf_value(&self, origin: Vector3<f32>, v: Vector3<f32>, stat: &mut RenderStats) -> f32 {
+        self.list.get_pdf_value(origin, v, stat)
     }
     fn random(&self, origin: Vector3<f32>) -> Vector3<f32> {
         self.list.random(origin)

@@ -1,6 +1,6 @@
 use crate::hitables::{HitRecord, Hitable, ThreadHitable, AABB};
 use crate::render::Ray;
-use crate::stats::{record_stat, RenderStat};
+use crate::stats::RenderStats;
 use crate::{next_rand_f32, vec3, Vector3};
 use std::fmt;
 use std::sync::Arc;
@@ -107,19 +107,19 @@ impl BvhNode {
 }
 
 impl Hitable for BvhNode {
-    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, stat: &mut RenderStats) -> Option<HitRecord> {
         info!("bvhnode::hit()");
-        record_stat(RenderStat::BvhNodeHit);
+        stat.bvh_node_hit();
 
-        if !self.bounding_box.hit(ray, t_min, t_max) {
+        if !self.bounding_box.hit(ray, t_min, t_max, stat) {
             info!("exiting bvhhode::hit() -- NONE");
             return None;
         }
 
         info!("going left");
-        let h_l = self.left.hit(ray, t_min, t_max);
+        let h_l = self.left.hit(ray, t_min, t_max, stat);
         info!("done left, going right");
-        let h_r = self.right.hit(ray, t_min, t_max);
+        let h_r = self.right.hit(ray, t_min, t_max, stat);
         info!("done right");
 
         let h = match (h_l, h_r) {
@@ -150,7 +150,12 @@ impl Hitable for BvhNode {
 
         h
     }
-    fn get_pdf_value(&self, _origin: Vector3<f32>, _v: Vector3<f32>) -> f32 {
+    fn get_pdf_value(
+        &self,
+        _origin: Vector3<f32>,
+        _v: Vector3<f32>,
+        _stat: &mut RenderStats,
+    ) -> f32 {
         0.0
     }
     fn random(&self, _origin: Vector3<f32>) -> Vector3<f32> {

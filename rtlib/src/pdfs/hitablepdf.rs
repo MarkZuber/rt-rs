@@ -1,5 +1,6 @@
 use crate::hitables::Hitable;
 use crate::pdfs::Pdf;
+use crate::stats::RenderStats;
 use crate::Vector3;
 use std::sync::Arc;
 
@@ -19,8 +20,8 @@ impl HitablePdf {
 }
 
 impl Pdf for HitablePdf {
-    fn get_value(&self, direction: Vector3<f32>) -> f32 {
-        self.hitable.get_pdf_value(self.origin, direction)
+    fn get_value(&self, direction: Vector3<f32>, stat: &mut RenderStats) -> f32 {
+        self.hitable.get_pdf_value(self.origin, direction, stat)
     }
 
     fn generate(&self) -> Vector3<f32> {

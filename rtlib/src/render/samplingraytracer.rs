@@ -1,5 +1,6 @@
 use crate::pdfs::{HitablePdf, MixturePdf, Pdf};
 use crate::render::{Color, Ray, RayTracer, RenderConfig, Scene};
+use crate::stats::RenderStats;
 use crate::Vector3;
 use std::sync::Arc;
 
@@ -14,6 +15,7 @@ impl SamplingRayTracer {
 impl RayTracer for SamplingRayTracer {
     fn get_ray_color(
         &self,
+        stat: &mut RenderStats,
         ray: &Ray,
         the_scene: &Scene,
         render_config: &RenderConfig,
@@ -22,7 +24,7 @@ impl RayTracer for SamplingRayTracer {
         info!("get_ray_color depth: {}", depth);
 
         // the 0.001 corrects for the "shadow acne"
-        match the_scene.get_world().hit(ray, 0.001, std::f32::MAX) {
+        match the_scene.get_world().hit(ray, 0.001, std::f32::MAX, stat) {
             Some(hit_record) => {
                 let material = the_scene
                     .get_material(&hit_record.get_material_id())
@@ -30,12 +32,13 @@ impl RayTracer for SamplingRayTracer {
                 let emitted = material.emitted(ray, &hit_record);
 
                 if depth < render_config.ray_trace_depth {
-                    let scatter_result = material.scatter(ray, &hit_record);
+                    let scatter_result = material.scatter(ray, &hit_record, stat);
                     if scatter_result.is_scattered() {
                         match scatter_result.get_specular_ray() {
                             Some(specular_ray) => {
                                 return scatter_result.get_attenuation().multiply(
                                     self.get_ray_color(
+                                        stat,
                                         &specular_ray,
                                         the_scene,
                                         render_config,
@@ -50,13 +53,14 @@ impl RayTracer for SamplingRayTracer {
                                     Vector3::new(0.0, 0.0, 0.0),
                                 ));
                                 let p = MixturePdf::new(plight, scatter_result.get_pdf());
-                                let scattered = Ray::new(hit_record.get_p(), p.generate());
+                                let scattered = Ray::new(hit_record.get_p(), p.generate(), stat);
 
-                                let pdf_value = p.get_value(scattered.get_direction());
+                                let pdf_value = p.get_value(scattered.get_direction(), stat);
                                 let scattering_pdf =
                                     material.scattering_pdf(ray, &hit_record, &scattered);
 
                                 let depth_ray_color = self.get_ray_color(
+                                    stat,
                                     &scattered,
                                     the_scene,
                                     render_config,

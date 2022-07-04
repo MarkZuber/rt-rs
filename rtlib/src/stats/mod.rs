@@ -1,21 +1,6 @@
+use num_format::{Locale, ToFormattedString};
 use serde::Serialize;
 use std::fmt;
-use std::sync::atomic::{AtomicU64, Ordering};
-
-pub enum RenderStat {
-    RayCreate,
-    CameraRayCreate,
-    AabbHit,
-    BvhNodeHit,
-    CubeHit,
-    HitableListHit,
-    MediumHit,
-    SphereHit,
-    TriangleHit,
-    XyRectHit,
-    XzRectHit,
-    YzRectHit,
-}
 
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct RenderStats {
@@ -35,93 +20,145 @@ pub struct RenderStats {
 
 impl fmt::Display for RenderStats {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let j = serde_json::to_string_pretty(&self).unwrap();
-        write!(f, "{}", j)
+        write!(
+            f,
+            "\nray_creates:          {}\n",
+            self.ray_creates.to_formatted_string(&Locale::en)
+        )?;
+        write!(
+            f,
+            "camera_ray_creates:   {}\n",
+            self.camera_ray_creates.to_formatted_string(&Locale::en)
+        )?;
+        write!(
+            f,
+            "aabb_hits:            {}\n",
+            self.aabb_hits.to_formatted_string(&Locale::en)
+        )?;
+        write!(
+            f,
+            "bvh_node_hits:        {}\n",
+            self.bvh_node_hits.to_formatted_string(&Locale::en)
+        )?;
+        write!(
+            f,
+            "cube_hits:            {}\n",
+            self.cube_hits.to_formatted_string(&Locale::en)
+        )?;
+        write!(
+            f,
+            "hitable_list_hits:    {}\n",
+            self.hitable_list_hits.to_formatted_string(&Locale::en)
+        )?;
+        write!(
+            f,
+            "medium_hits:          {}\n",
+            self.medium_hits.to_formatted_string(&Locale::en)
+        )?;
+        write!(
+            f,
+            "sphere_hits:          {}\n",
+            self.sphere_hits.to_formatted_string(&Locale::en)
+        )?;
+        write!(
+            f,
+            "triangle_hits:        {}\n",
+            self.triangle_hits.to_formatted_string(&Locale::en)
+        )?;
+        write!(
+            f,
+            "xy_rect_hits:         {}\n",
+            self.xy_rect_hits.to_formatted_string(&Locale::en)
+        )?;
+        write!(
+            f,
+            "xz_rect_hits:         {}\n",
+            self.xz_rect_hits.to_formatted_string(&Locale::en)
+        )?;
+        write!(
+            f,
+            "yz_rect_hits:         {}\n",
+            self.yz_rect_hits.to_formatted_string(&Locale::en)
+        )
     }
 }
 
-pub fn reset_stats() {
-    STAT_RAY_CREATE.store(0, Ordering::Relaxed);
-    STAT_CAMERA_RAY_CREATES.store(0, Ordering::Relaxed);
-    STAT_AABB_HITS.store(0, Ordering::Relaxed);
-    STAT_BVH_NODE_HITS.store(0, Ordering::Relaxed);
-    STAT_CUBE_HITS.store(0, Ordering::Relaxed);
-    STAT_HITABLE_LIST_HITS.store(0, Ordering::Relaxed);
-    STAT_MEDIUM_HITS.store(0, Ordering::Relaxed);
-    STAT_SPHERE_HITS.store(0, Ordering::Relaxed);
-    STAT_TRIANGLE_HITS.store(0, Ordering::Relaxed);
-    STAT_XY_RECT_HITS.store(0, Ordering::Relaxed);
-    STAT_XZ_RECT_HITS.store(0, Ordering::Relaxed);
-    STAT_YZ_RECT_HITS.store(0, Ordering::Relaxed);
-}
+impl RenderStats {
+    pub fn new() -> RenderStats {
+        RenderStats {
+            ray_creates: 0,
+            camera_ray_creates: 0,
+            aabb_hits: 0,
+            bvh_node_hits: 0,
+            cube_hits: 0,
+            hitable_list_hits: 0,
+            medium_hits: 0,
+            sphere_hits: 0,
+            triangle_hits: 0,
+            xy_rect_hits: 0,
+            xz_rect_hits: 0,
+            yz_rect_hits: 0,
+        }
+    }
 
-pub fn get_stats() -> RenderStats {
-    RenderStats {
-        ray_creates: STAT_RAY_CREATE.load(Ordering::Relaxed),
-        camera_ray_creates: STAT_CAMERA_RAY_CREATES.load(Ordering::Relaxed),
-        aabb_hits: STAT_AABB_HITS.load(Ordering::Relaxed),
-        bvh_node_hits: STAT_BVH_NODE_HITS.load(Ordering::Relaxed),
-        cube_hits: STAT_CUBE_HITS.load(Ordering::Relaxed),
-        hitable_list_hits: STAT_HITABLE_LIST_HITS.load(Ordering::Relaxed),
-        medium_hits: STAT_MEDIUM_HITS.load(Ordering::Relaxed),
-        sphere_hits: STAT_SPHERE_HITS.load(Ordering::Relaxed),
-        triangle_hits: STAT_TRIANGLE_HITS.load(Ordering::Relaxed),
-        xy_rect_hits: STAT_XY_RECT_HITS.load(Ordering::Relaxed),
-        xz_rect_hits: STAT_XZ_RECT_HITS.load(Ordering::Relaxed),
-        yz_rect_hits: STAT_YZ_RECT_HITS.load(Ordering::Relaxed),
+    pub fn add(&self, other: RenderStats) -> RenderStats {
+        RenderStats {
+            ray_creates: self.ray_creates + other.ray_creates,
+            camera_ray_creates: self.camera_ray_creates + other.camera_ray_creates,
+            aabb_hits: self.aabb_hits + other.aabb_hits,
+            bvh_node_hits: self.bvh_node_hits + other.bvh_node_hits,
+            cube_hits: self.cube_hits + other.cube_hits,
+            hitable_list_hits: self.hitable_list_hits + other.hitable_list_hits,
+            medium_hits: self.medium_hits + other.medium_hits,
+            sphere_hits: self.sphere_hits + other.sphere_hits,
+            triangle_hits: self.triangle_hits + other.triangle_hits,
+            xy_rect_hits: self.xy_rect_hits + other.xy_rect_hits,
+            xz_rect_hits: self.xz_rect_hits + other.xz_rect_hits,
+            yz_rect_hits: self.yz_rect_hits + other.yz_rect_hits,
+        }
+    }
+
+    pub fn ray_create(&mut self) {
+        self.ray_creates += 1;
+    }
+    pub fn camera_ray_create(&mut self) {
+        self.camera_ray_creates += 1;
+    }
+    pub fn aabb_hit(&mut self) {
+        self.aabb_hits += 1;
+    }
+    pub fn bvh_node_hit(&mut self) {
+        self.bvh_node_hits += 1;
+    }
+    pub fn cube_hit(&mut self) {
+        self.cube_hits += 1;
+    }
+    pub fn hitable_list_hit(&mut self) {
+        self.hitable_list_hits += 1;
+    }
+    pub fn medium_hit(&mut self) {
+        self.medium_hits += 1;
+    }
+    pub fn sphere_hit(&mut self) {
+        self.sphere_hits += 1;
+    }
+    pub fn triangle_hit(&mut self) {
+        self.triangle_hits += 1;
+    }
+    pub fn xy_rect_hit(&mut self) {
+        self.xy_rect_hits += 1;
+    }
+    pub fn xz_rect_hit(&mut self) {
+        self.xz_rect_hits += 1;
+    }
+    pub fn yz_rect_hit(&mut self) {
+        self.yz_rect_hits += 1;
     }
 }
 
-static STAT_RAY_CREATE: AtomicU64 = AtomicU64::new(0);
-static STAT_CAMERA_RAY_CREATES: AtomicU64 = AtomicU64::new(0);
-static STAT_AABB_HITS: AtomicU64 = AtomicU64::new(0);
-static STAT_BVH_NODE_HITS: AtomicU64 = AtomicU64::new(0);
-static STAT_CUBE_HITS: AtomicU64 = AtomicU64::new(0);
-static STAT_HITABLE_LIST_HITS: AtomicU64 = AtomicU64::new(0);
-static STAT_MEDIUM_HITS: AtomicU64 = AtomicU64::new(0);
-static STAT_SPHERE_HITS: AtomicU64 = AtomicU64::new(0);
-static STAT_TRIANGLE_HITS: AtomicU64 = AtomicU64::new(0);
-static STAT_XY_RECT_HITS: AtomicU64 = AtomicU64::new(0);
-static STAT_XZ_RECT_HITS: AtomicU64 = AtomicU64::new(0);
-static STAT_YZ_RECT_HITS: AtomicU64 = AtomicU64::new(0);
-
-pub fn record_stat(stat: RenderStat) {
-    // match stat {
-    //     RenderStat::RayCreate => {
-    //         STAT_RAY_CREATE.fetch_add(1, Ordering::Relaxed);
-    //     }
-    //     RenderStat::AabbHit => {
-    //         STAT_AABB_HITS.fetch_add(1, Ordering::Relaxed);
-    //     }
-    //     RenderStat::BvhNodeHit => {
-    //         STAT_BVH_NODE_HITS.fetch_add(1, Ordering::Relaxed);
-    //     }
-    //     RenderStat::CameraRayCreate => {
-    //         STAT_CAMERA_RAY_CREATES.fetch_add(1, Ordering::Relaxed);
-    //     }
-    //     RenderStat::CubeHit => {
-    //         STAT_CUBE_HITS.fetch_add(1, Ordering::Relaxed);
-    //     }
-    //     RenderStat::HitableListHit => {
-    //         STAT_HITABLE_LIST_HITS.fetch_add(1, Ordering::Relaxed);
-    //     }
-    //     RenderStat::MediumHit => {
-    //         STAT_MEDIUM_HITS.fetch_add(1, Ordering::Relaxed);
-    //     }
-    //     RenderStat::SphereHit => {
-    //         STAT_SPHERE_HITS.fetch_add(1, Ordering::Relaxed);
-    //     }
-    //     RenderStat::TriangleHit => {
-    //         STAT_TRIANGLE_HITS.fetch_add(1, Ordering::Relaxed);
-    //     }
-    //     RenderStat::XyRectHit => {
-    //         STAT_XY_RECT_HITS.fetch_add(1, Ordering::Relaxed);
-    //     }
-    //     RenderStat::XzRectHit => {
-    //         STAT_XZ_RECT_HITS.fetch_add(1, Ordering::Relaxed);
-    //     }
-    //     RenderStat::YzRectHit => {
-    //         STAT_YZ_RECT_HITS.fetch_add(1, Ordering::Relaxed);
-    //     }
-    // }
-}
+// impl fmt::Display for RenderStats {
+//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//         let j = serde_json::to_string_pretty(&self).unwrap();
+//         write!(f, "{}", j)
+//     }
+// }

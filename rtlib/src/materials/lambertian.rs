@@ -2,6 +2,7 @@ use crate::hitables::HitRecord;
 use crate::materials::{Material, ScatterResult, ThreadMaterial};
 use crate::pdfs::CosinePdf;
 use crate::render::Ray;
+use crate::stats::RenderStats;
 use crate::textures::ThreadTexture;
 use crate::{to_unit_vector, InnerSpace};
 use std::f32;
@@ -18,7 +19,12 @@ impl LambertianMaterial {
 }
 
 impl Material for LambertianMaterial {
-    fn scatter(&self, _ray_in: &Ray, hit_record: &HitRecord) -> Arc<Box<ScatterResult>> {
+    fn scatter(
+        &self,
+        _ray_in: &Ray,
+        hit_record: &HitRecord,
+        _stat: &mut RenderStats,
+    ) -> Arc<Box<ScatterResult>> {
         let attenuation = self
             .albedo
             .get_value(hit_record.get_uv_coords(), hit_record.get_p());

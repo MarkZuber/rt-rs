@@ -8,9 +8,10 @@ pub use self::hitablepdf::HitablePdf;
 pub use self::mixturepdf::MixturePdf;
 pub use self::orthonormalbase::OrthoNormalBase;
 
+use crate::stats::RenderStats;
 use crate::Vector3;
 
 pub trait Pdf {
-    fn get_value(&self, direction: Vector3<f32>) -> f32;
+    fn get_value(&self, direction: Vector3<f32>, stat: &mut RenderStats) -> f32;
     fn generate(&self) -> Vector3<f32>;
 }
