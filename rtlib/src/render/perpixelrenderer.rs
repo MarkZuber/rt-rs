@@ -44,7 +44,6 @@ impl PerPixelRenderer {
 
     fn render_pixel(
         &self,
-        pixel_buffer: &Arc<Mutex<PixelBuffer>>,
         the_scene: &Arc<Box<Scene>>,
         the_camera: &ThreadCamera,
         render_config: &RenderConfig,
@@ -54,8 +53,8 @@ impl PerPixelRenderer {
         num_samples_f32: f32,
         x: u32,
         y: u32,
-    ) -> RenderStats {
-        let color_with_stat: ColorWithStat = (0..render_config.num_samples)
+    ) -> ColorWithStat {
+        let mut color_with_stat: ColorWithStat = (0..render_config.num_samples)
             .into_par_iter()
             .map(|_sample| {
                 let mut stat = RenderStats::new();
@@ -67,19 +66,55 @@ impl PerPixelRenderer {
             })
             .sum();
 
-        let mut color = color_with_stat.color;
-
-        color = color
+        color_with_stat.color = color_with_stat
+            .color
             .de_nan()
             .multiply_by_scalar(1.0 / num_samples_f32)
             .apply_gamma();
+        color_with_stat
+    }
 
+    fn render_line(
+        &self,
+        pixel_buffer: &Arc<Mutex<PixelBuffer>>,
+        the_scene: &Arc<Box<Scene>>,
+        the_camera: &ThreadCamera,
+        render_config: &RenderConfig,
+        ray_tracer: &SamplingRayTracer,
+        width_f32: f32,
+        height_f32: f32,
+        num_samples_f32: f32,
+        image_width: u32,
+        y: u32,
+    ) -> RenderStats {
+        let mut render_stats = RenderStats::new();
+
+        // collect pixels per line
+        let mut line_colors: Vec<Color> = Vec::new();
+        for x in 0..image_width {
+            let stat_with_color = self.render_pixel(
+                &the_scene,
+                &the_camera,
+                &render_config,
+                &ray_tracer,
+                width_f32,
+                height_f32,
+                num_samples_f32,
+                x,
+                y,
+            );
+            render_stats = render_stats.add(stat_with_color.stat);
+            line_colors.push(stat_with_color.color);
+        }
         {
             let mut pixbuf = pixel_buffer.lock().unwrap();
-            pixbuf.set_pixel_color(x, y, color);
+            for x in 0..image_width {
+                pixbuf.set_pixel_color(x, y, line_colors[x as usize]);
+            }
         }
+        (self.per_line_callback)(y);
 
-        color_with_stat.stat
+        render_stats
     }
 
     fn render_threaded(
@@ -109,60 +144,143 @@ impl PerPixelRenderer {
 
         let mut render_stats = RenderStats::new();
 
-        for y in 0..half_height {
-            for x in 0..half_width {
-                render_stats = render_stats.add(self.render_pixel(
-                    &pixel_buffer,
-                    &the_scene,
-                    &the_camera,
-                    &render_config,
-                    &ray_tracer,
-                    width_f32,
-                    height_f32,
-                    num_samples_f32,
-                    half_width - x - 1,
-                    half_height - y - 1,
-                ));
-                render_stats = render_stats.add(self.render_pixel(
-                    &pixel_buffer,
-                    &the_scene,
-                    &the_camera,
-                    &render_config,
-                    &ray_tracer,
-                    width_f32,
-                    height_f32,
-                    num_samples_f32,
-                    half_width - x - 1,
-                    half_height + y,
-                ));
-                render_stats = render_stats.add(self.render_pixel(
-                    &pixel_buffer,
-                    &the_scene,
-                    &the_camera,
-                    &render_config,
-                    &ray_tracer,
-                    width_f32,
-                    height_f32,
-                    num_samples_f32,
-                    half_width + x,
-                    half_height - y - 1,
-                ));
-                render_stats = render_stats.add(self.render_pixel(
-                    &pixel_buffer,
-                    &the_scene,
-                    &the_camera,
-                    &render_config,
-                    &ray_tracer,
-                    width_f32,
-                    height_f32,
-                    num_samples_f32,
-                    half_width + x,
-                    half_height + y,
-                ));
-            }
+        // Switch between two different types of rendering to test lock contention on the pixel buffer.
+        // Initial testing doesn't show any evidence of lock contention.
+        // The only lock sharing is between the renderer (which is single threaded for accessing the buffer)
+        // and the screen renderer (pulling contents of the buffer to draw while rendering).
+        // I like the render_per_line code better since it's less verbose but it means i can only
+        // render on a per-line basis where the other could do more progressive rendering if desired.
+        let render_per_line = true;
 
-            (self.per_line_callback)(half_height - y - 1);
-            (self.per_line_callback)(half_height + y);
+        if render_per_line {
+            for y in 0..half_height {
+                {
+                    let stats = self.render_line(
+                        &pixel_buffer,
+                        &the_scene,
+                        &the_camera,
+                        &render_config,
+                        &ray_tracer,
+                        width_f32,
+                        height_f32,
+                        num_samples_f32,
+                        image_width,
+                        half_height - y - 1,
+                    );
+                    render_stats = render_stats.add(stats);
+                }
+                {
+                    let stats = self.render_line(
+                        &pixel_buffer,
+                        &the_scene,
+                        &the_camera,
+                        &render_config,
+                        &ray_tracer,
+                        width_f32,
+                        height_f32,
+                        num_samples_f32,
+                        image_width,
+                        half_height + y,
+                    );
+                    render_stats = render_stats.add(stats);
+                }
+            }
+        } else {
+            for y in 0..half_height {
+                for x in 0..half_width {
+                    {
+                        let stat_with_color = self.render_pixel(
+                            &the_scene,
+                            &the_camera,
+                            &render_config,
+                            &ray_tracer,
+                            width_f32,
+                            height_f32,
+                            num_samples_f32,
+                            half_width - x - 1,
+                            half_height - y - 1,
+                        );
+                        render_stats = render_stats.add(stat_with_color.stat);
+                        {
+                            let mut pixbuf = pixel_buffer.lock().unwrap();
+                            pixbuf.set_pixel_color(
+                                half_width - x - 1,
+                                half_height - y - 1,
+                                stat_with_color.color,
+                            );
+                        }
+                    }
+                    {
+                        let stat_with_color = self.render_pixel(
+                            &the_scene,
+                            &the_camera,
+                            &render_config,
+                            &ray_tracer,
+                            width_f32,
+                            height_f32,
+                            num_samples_f32,
+                            half_width - x - 1,
+                            half_height + y,
+                        );
+                        render_stats = render_stats.add(stat_with_color.stat);
+                        {
+                            let mut pixbuf = pixel_buffer.lock().unwrap();
+                            pixbuf.set_pixel_color(
+                                half_width - x - 1,
+                                half_height + y,
+                                stat_with_color.color,
+                            );
+                        }
+                    }
+                    {
+                        let stat_with_color = self.render_pixel(
+                            &the_scene,
+                            &the_camera,
+                            &render_config,
+                            &ray_tracer,
+                            width_f32,
+                            height_f32,
+                            num_samples_f32,
+                            half_width + x,
+                            half_height - y - 1,
+                        );
+                        render_stats = render_stats.add(stat_with_color.stat);
+                        {
+                            let mut pixbuf = pixel_buffer.lock().unwrap();
+                            pixbuf.set_pixel_color(
+                                half_width + x,
+                                half_height - y - 1,
+                                stat_with_color.color,
+                            );
+                        }
+                    }
+                    {
+                        let stat_with_color = self.render_pixel(
+                            &the_scene,
+                            &the_camera,
+                            &render_config,
+                            &ray_tracer,
+                            width_f32,
+                            height_f32,
+                            num_samples_f32,
+                            half_width + x,
+                            half_height + y,
+                        );
+                        render_stats = render_stats.add(stat_with_color.stat);
+                        {
+                            let mut pixbuf = pixel_buffer.lock().unwrap();
+                            pixbuf.set_pixel_color(
+                                half_width + x,
+                                half_height + y,
+                                stat_with_color.color,
+                            );
+                        }
+                    }
+                }
+
+                (self.per_line_callback)(half_height - y - 1);
+                (self.per_line_callback)(half_height + y);
+            }
         }
 
         render_stats
