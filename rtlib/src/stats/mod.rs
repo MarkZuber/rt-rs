@@ -155,10 +155,3 @@ impl RenderStats {
         self.yz_rect_hits += 1;
     }
 }
-
-// impl fmt::Display for RenderStats {
-//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-//         let j = serde_json::to_string_pretty(&self).unwrap();
-//         write!(f, "{}", j)
-//     }
-// }
