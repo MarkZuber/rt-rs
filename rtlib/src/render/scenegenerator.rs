@@ -7,6 +7,7 @@ use std::sync::Arc;
 pub trait SceneGenerator: Sync {
     fn get_scene(&self) -> Scene;
     fn get_camera(&self) -> ThreadCamera;
+    fn get_camera_angled(&self, angle_x: f32, angle_y: f32) -> ThreadCamera;
     fn get_render_config(&self) -> RenderConfig;
     fn get_background_color(&self) -> Color;
 }

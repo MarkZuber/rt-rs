@@ -134,6 +134,10 @@ impl SceneGenerator for ManySpheresScene {
         )))
     }
 
+    fn get_camera_angled(&self, _angle_x: f32, _angle_y: f32) -> ThreadCamera {
+        self.get_camera()
+    }
+
     fn get_render_config(&self) -> RenderConfig {
         self.render_config.clone()
     }

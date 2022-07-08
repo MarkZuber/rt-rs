@@ -68,23 +68,21 @@ fn do_render(
     scene_generator: Arc<Box<dyn SceneGenerator + Send>>,
 ) {
     let pb = pixel_buffer.clone();
-    let scene = scene_generator.get_scene();
-    let camera = scene_generator.get_camera();
 
-    renderer.render(
-        pixel_buffer,
-        Arc::new(Box::new(scene)),
-        camera,
-        render_config,
-    );
+    for cam_x in -50..50 {
+        let scene = scene_generator.get_scene();
+        let camera = scene_generator.get_camera_angled(cam_x as f32, 0.0);
 
-    if should_save {
-        std::fs::create_dir_all("./images").unwrap();
-        let pixbuf = pb.lock().unwrap();
-        pixbuf.save_as_png(&format!(
-            "./images/image_{}.png",
-            get_datetime_file_marker()
-        ));
+        renderer.render(pb.clone(), Arc::new(Box::new(scene)), camera, render_config);
+
+        if should_save {
+            std::fs::create_dir_all("./images").unwrap();
+            let pixbuf = pb.lock().unwrap();
+            pixbuf.save_as_png(&format!(
+                "./images/image_{}.png",
+                get_datetime_file_marker()
+            ));
+        }
     }
 }
 
