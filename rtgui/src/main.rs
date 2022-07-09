@@ -72,8 +72,14 @@ fn do_render(
     scene_generator: Arc<Box<dyn SceneGenerator + Send>>,
 ) {
     let pb = pixel_buffer.clone();
+
+    // TODO: this will render multple images from different angles to make
+    // an animation.  Find a way to bring this in via commandline parameters?
+    // for cam_x in -50..50 {
+    let cam_x = 0.0;
+    let cam_y = 0.0;
     let scene = scene_generator.get_scene();
-    let camera = scene_generator.get_camera();
+    let camera = scene_generator.get_camera_angled(cam_x, cam_y);
 
     let start_time = Utc::now();
 
@@ -99,6 +105,7 @@ fn do_render(
             get_datetime_file_marker()
         ));
     }
+    // }
 }
 
 fn main() {

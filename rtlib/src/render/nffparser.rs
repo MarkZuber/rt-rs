@@ -44,6 +44,10 @@ impl SceneGenerator for NffParser {
         self.camera.clone()
     }
 
+    fn get_camera_angled(&self, _angle_x: f32, _angle_y: f32) -> ThreadCamera {
+        self.camera.clone()
+    }
+
     fn get_render_config(&self) -> RenderConfig {
         self.render_config.clone()
     }

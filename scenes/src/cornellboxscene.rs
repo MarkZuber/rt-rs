@@ -13,6 +13,7 @@ use rtlib::render::Color;
 use rtlib::render::{RenderConfig, Scene, SceneGenerator};
 use rtlib::textures::{ColorTexture, VectorNoiseMode, VectorNoiseTexture};
 use rtlib::{vec3, Vector3};
+use std::f32;
 use std::sync::Arc;
 
 pub struct CornellBoxScene {
@@ -85,7 +86,23 @@ impl SceneGenerator for CornellBoxScene {
     }
 
     fn get_camera(&self) -> ThreadCamera {
-        let look_from = vec3(278.0, 278.0, -800.0);
+        self.get_camera_angled(0.0, 0.0)
+    }
+
+    fn get_camera_angled(&self, angle_x: f32, angle_y: f32) -> ThreadCamera {
+        let cam_angle_x = angle_x;
+        let cam_angle_y = angle_y;
+        let distance = 800.0;
+
+        let cam_x = distance
+            * -((cam_angle_x * f32::consts::PI / 180.0).sin())
+            * (cam_angle_y * f32::consts::PI / 180.0).cos();
+        let cam_y = distance * -((cam_angle_y * f32::consts::PI / 180.0).sin());
+        let cam_z = -distance
+            * (cam_angle_x * f32::consts::PI / 180.0).cos()
+            * (cam_angle_y * f32::consts::PI / 180.0).cos();
+
+        let look_from = vec3(cam_x + 278.0, cam_y + 278.0, cam_z);
         let look_at = vec3(278.0, 278.0, 0.0);
         let dist_to_focus = 10.0;
         let aperture = 0.0;
