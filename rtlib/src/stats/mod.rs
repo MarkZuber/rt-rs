@@ -9,6 +9,7 @@ pub struct RenderStats {
     aabb_hits: u64,
     bvh_node_hits: u64,
     cube_hits: u64,
+    cylinder_hits: u64,
     hitable_list_hits: u64,
     medium_hits: u64,
     sphere_hits: u64,
@@ -44,6 +45,11 @@ impl fmt::Display for RenderStats {
             f,
             "cube_hits:            {}\n",
             self.cube_hits.to_formatted_string(&Locale::en)
+        )?;
+        write!(
+            f,
+            "cylinder_hits:            {}\n",
+            self.cylinder_hits.to_formatted_string(&Locale::en)
         )?;
         write!(
             f,
@@ -91,6 +97,7 @@ impl RenderStats {
             aabb_hits: 0,
             bvh_node_hits: 0,
             cube_hits: 0,
+            cylinder_hits: 0,
             hitable_list_hits: 0,
             medium_hits: 0,
             sphere_hits: 0,
@@ -108,6 +115,7 @@ impl RenderStats {
             aabb_hits: self.aabb_hits + other.aabb_hits,
             bvh_node_hits: self.bvh_node_hits + other.bvh_node_hits,
             cube_hits: self.cube_hits + other.cube_hits,
+            cylinder_hits: self.cylinder_hits + other.cylinder_hits,
             hitable_list_hits: self.hitable_list_hits + other.hitable_list_hits,
             medium_hits: self.medium_hits + other.medium_hits,
             sphere_hits: self.sphere_hits + other.sphere_hits,
@@ -132,6 +140,9 @@ impl RenderStats {
     }
     pub fn cube_hit(&mut self) {
         self.cube_hits += 1;
+    }
+    pub fn cylinder_hit(&mut self) {
+        self.cylinder_hits += 1;
     }
     pub fn hitable_list_hit(&mut self) {
         self.hitable_list_hits += 1;

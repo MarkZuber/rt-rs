@@ -1,9 +1,11 @@
 use crate::{Point2, Vector3};
 
+#[derive(Copy, Clone)]
 pub struct HitRecord {
     pub t: f32,
     pub p: Vector3<f32>,
     pub normal: Vector3<f32>,
+    pub distance_squared: f32,
     pub material_id: u64,
 
     // Texture Coordinates
@@ -15,6 +17,7 @@ impl HitRecord {
         t: f32,
         p: Vector3<f32>,
         normal: Vector3<f32>,
+        distance_squared: f32,
         material_id: u64,
         uv_coords: Point2<f32>,
     ) -> HitRecord {
@@ -22,6 +25,7 @@ impl HitRecord {
             t,
             p,
             normal,
+            distance_squared,
             material_id,
             uv_coords,
         }

@@ -1,6 +1,7 @@
 mod aabb;
 mod bvhnode;
 mod cube;
+mod cylinder;
 mod flipnormals;
 mod hitablelist;
 mod hitrecord;
@@ -18,6 +19,7 @@ mod yzrect;
 pub use self::aabb::AABB;
 pub use self::bvhnode::BvhNode;
 pub use self::cube::Cube;
+pub use self::cylinder::Cylinder;
 pub use self::flipnormals::FlipNormals;
 pub use self::hitablelist::HitableList;
 pub use self::hitrecord::HitRecord;

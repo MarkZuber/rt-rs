@@ -29,6 +29,7 @@ impl Hitable for FlipNormals {
                 hr.get_t(),
                 hr.get_p(),
                 -hr.get_normal(),
+                0.0, // todo: distance_squared
                 hr.get_material_id(),
                 hr.get_uv_coords(),
             ));

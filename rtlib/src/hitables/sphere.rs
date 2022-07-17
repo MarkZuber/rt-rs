@@ -87,6 +87,7 @@ impl Hitable for Sphere {
                     t,
                     p,
                     normal,
+                    0.0, // todo: distance_squared
                     self.get_material_id(),
                     self.get_sphere_uv(p),
                 ));
@@ -101,6 +102,7 @@ impl Hitable for Sphere {
                     t,
                     p,
                     normal,
+                    0.0, // todo: distance_squared
                     self.get_material_id(),
                     self.get_sphere_uv(p),
                 ));

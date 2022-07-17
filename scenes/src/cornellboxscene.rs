@@ -42,6 +42,8 @@ impl SceneGenerator for CornellBoxScene {
             VectorNoiseMode::DarkNoise,
             0.1,
         )));
+        let yellow = materials.add(LambertianMaterial::new(ColorTexture::new(1.0, 1.0, 0.0)));
+        let blue = materials.add(LambertianMaterial::new(ColorTexture::new(0.0, 0.0, 0.85)));
         let green = materials.add(LambertianMaterial::new(ColorTexture::new(0.12, 0.45, 0.15)));
         let _aluminum = materials.add(MetalMaterial::new(Color::new(0.8, 0.85, 0.88), 0.0));
         let light_rect = FlipNormals::new(XzRect::new(
@@ -53,28 +55,37 @@ impl SceneGenerator for CornellBoxScene {
             light_material,
         ));
 
+        let glass_sphere = Sphere::new(vec3(190.0, 90.0, 190.0), 90.0, glass);
+
+        let cylinder = Cylinder::new(vec3(50.0, 50.0, 50.0), 50.0, 50.0, blue, yellow);
+
         let hitables = vec![
-            FlipNormals::new(YzRect::new(0.0, 555.0, 0.0, 555.0, 555.0, green)),
-            YzRect::new(0.0, 555.0, 0.0, 555.0, 0.0, red),
-            light_rect.clone(),
-            FlipNormals::new(XzRect::new(0.0, 555.0, 0.0, 555.0, 555.0, white)), // top
-            XzRect::new(0.0, 555.0, 0.0, 555.0, 0.0, white),
-            FlipNormals::new(XyRect::new(0.0, 555.0, 0.0, 555.0, 555.0, noise)),
-            Translate::new(
-                RotateY::new(
-                    RotateX::new(
-                        RotateZ::new(
-                            Cube::new(vec3(0.0, 0.0, 0.0), vec3(165.0, 330.0, 165.0), blue),
-                            -15.0,
+                    FlipNormals::new(YzRect::new(0.0, 555.0, 0.0, 555.0, 555.0, green)),
+                    YzRect::new(0.0, 555.0, 0.0, 555.0, 0.0, red),
+                    light_rect.clone(),
+                    FlipNormals::new(XzRect::new(0.0, 555.0, 0.0, 555.0, 555.0, white)), // top
+                    XzRect::new(0.0, 555.0, 0.0, 555.0, 0.0, white),
+                    FlipNormals::new(XyRect::new(0.0, 555.0, 0.0, 555.0, 555.0, noise)),
+                    Translate::new(
+                        RotateY::new(
+                            RotateX::new(
+                                RotateZ::new(
+                                    Cube::new(vec3(0.0, 0.0, 0.0), vec3(165.0, 330.0, 165.0), blue),
+                                    -15.0,
+                                ),
+                                15.0,
+                            ),
+                            15.0,
                         ),
-                        15.0,
+                        vec3(265.0, 0.0, 295.0),
                     ),
-                    15.0,
-                ),
-                vec3(265.0, 0.0, 295.0),
-            ),
-            Sphere::new(vec3(190.0, 90.0, 190.0), 90.0, glass),
-        ];
+        <<<<<<< HEAD
+                    Sphere::new(vec3(190.0, 90.0, 190.0), 90.0, glass),
+        =======
+                    Translate::new(RotateY::new(cylinder, 35.0), vec3(350.0, 100.0, 300.0)),
+                    glass_sphere,
+        >>>>>>> 18154ca (Add cylinder type)
+                ];
 
         create_scene(
             &hitables,

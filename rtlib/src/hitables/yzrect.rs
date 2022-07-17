@@ -57,6 +57,7 @@ impl Hitable for YzRect {
             t,
             ray.get_point_at_parameter(t),
             Vector3::unit_x(),
+            0.0, // todo: distance_squared
             self.material_id,
             Point2::new(
                 (y - self.y0) / (self.y1 - self.y0),

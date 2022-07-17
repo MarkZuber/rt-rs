@@ -95,6 +95,7 @@ impl Hitable for RotateY {
                 hit_record.get_t(),
                 vec3(p[0], p[1], p[2]),
                 vec3(normal[0], normal[1], normal[2]),
+                0.0, // todo: distance_squared
                 hit_record.get_material_id(),
                 hit_record.get_uv_coords(),
             ));

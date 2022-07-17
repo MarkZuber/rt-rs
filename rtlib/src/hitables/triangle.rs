@@ -74,6 +74,7 @@ impl Hitable for Triangle {
                 t,
                 ray.get_point_at_parameter(t),
                 self.surface_normal,
+                0.0, // todo: distance_squared
                 self.material_id,
                 Point2::new(u, v),
             ));

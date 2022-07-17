@@ -49,6 +49,7 @@ impl Hitable for HitableList {
             t_max,
             vec3(0.0, 0.0, 0.0),
             vec3(0.0, 0.0, 0.0),
+            0.0, // todo: distance_squared
             0,
             Point2::new(0.0, 0.0),
         );

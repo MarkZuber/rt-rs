@@ -72,6 +72,7 @@ impl Hitable for ConstantMedium {
                         rec_t,
                         ray.get_point_at_parameter(rec_t),
                         Vector3::unit_x(), // arbitrary
+                        0.0,               // todo: distance_squared
                         self.phase_function,
                         Point2::new(0.0, 0.0), // don't need u/v since PhaseFunction is a calculation
                     ));
