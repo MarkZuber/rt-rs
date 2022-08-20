@@ -32,9 +32,13 @@ impl Renderer for ConsoleRenderer {
 
         let bar = Arc::new(ProgressBar::new(image_height as u64));
         if *show_bar {
-            bar.set_style(ProgressStyle::default_bar().template(
-            "[{elapsed} elapsed] {wide_bar:.cyan/white} {percent}% [{eta} remaining] [rendering]",
-        ));
+            let style_result = ProgressStyle::default_bar().template(
+                "[{elapsed} elapsed] {wide_bar:.cyan/white} {percent}% [{eta} remaining] [rendering]",
+            );
+            match style_result {
+                Ok(r) => bar.set_style(r),
+                Err(_e) => println!(),
+            }
         }
 
         let sb = show_bar.clone();

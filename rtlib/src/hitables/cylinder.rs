@@ -3,7 +3,7 @@ use crate::pdfs::OrthoNormalBase;
 use crate::random_to_sphere;
 use crate::render::Ray;
 use crate::stats::RenderStats;
-use crate::{to_unit_vector, vec3, InnerSpace, Point2, Vector3};
+use crate::{vec3, InnerSpace, Point2, Vector3};
 use std::sync::Arc;
 use std::{f32, fmt};
 
@@ -25,8 +25,8 @@ impl Cylinder {
         material_id: u64,
         material_id_caps: u64,
     ) -> ThreadHitable {
-        let a = vec3(center.x, center.y, center.z - half_height);
-        let b = vec3(center.x, center.y, center.z + half_height);
+        // let a = vec3(center.x, center.y, center.z - half_height);
+        // let b = vec3(center.x, center.y, center.z + half_height);
 
         // let kx = (((a.y - b.y).powf(2.0) + (a.z - b.z).powf(2.0))
         //     / ((a.x - b.x).powf(2.0) + (a.y - b.y).powf(2.0) + (a.z - b.z).powf(2.0)))
@@ -39,14 +39,14 @@ impl Cylinder {
         //     / ((a.x - b.x).powf(2.0) + (a.y - b.y).powf(2.0) + (a.z - b.z).powf(2.0)))
         // .sqrt();
 
-        let mut min_bb = vec3(a.x.min(b.x), a.y.min(b.y), a.z.min(b.z));
-        let mut max_bb = vec3(a.x.max(b.x), a.y.max(b.y), a.z.max(b.z));
+        // let mut min_bb = vec3(a.x.min(b.x), a.y.min(b.y), a.z.min(b.z));
+        // let mut max_bb = vec3(a.x.max(b.x), a.y.max(b.y), a.z.max(b.z));
 
         // min_bb = min_bb - vec3(kx * radius, ky * radius, kz * radius);
         // max_bb = max_bb + vec3(kx * radius, ky * radius, kz * radius);
 
-        min_bb = min_bb - vec3(0.0, radius, 0.0);
-        max_bb = max_bb + vec3(radius, radius, 0.0);
+        // min_bb = min_bb - vec3(0.0, radius, 0.0);
+        // max_bb = max_bb + vec3(radius, radius, 0.0);
 
         // let bounding_box = AABB::new(min_bb, max_bb);
 
@@ -75,7 +75,7 @@ impl Cylinder {
         self.radius
     }
 
-    pub fn get_sphere_uv(&self, p: Vector3<f32>) -> Point2<f32> {
+    pub fn get_sphere_uv(&self, _p: Vector3<f32>) -> Point2<f32> {
         // let pi = std::f32::consts::PI;
         // let punit = to_unit_vector(p);
         // let phi = punit.z.atan2(punit.x);

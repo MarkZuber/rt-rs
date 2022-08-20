@@ -12,8 +12,8 @@ use log::LevelFilter;
 use log4rs::append::file::FileAppender;
 use log4rs::config::{Appender, Config, Root};
 use log4rs::encode::pattern::PatternEncoder;
-use pprof;
-use std::fs::File;
+// use pprof;
+// use std::fs::File;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -54,9 +54,8 @@ struct MainOptions {
 
     #[structopt(short = "n", long = "no-save")]
     no_save: bool,
-
-    #[structopt(short = "p", long = "profile")]
-    profile: bool,
+    // #[structopt(short = "p", long = "profile")]
+    // profile: bool,
 }
 
 fn get_datetime_file_marker() -> String {
@@ -112,10 +111,10 @@ fn main() {
     let opts = MainOptions::from_args();
     enable_logging(&opts);
 
-    let mut guard: Option<pprof::ProfilerGuard> = None;
-    if opts.profile {
-        guard = Some(pprof::ProfilerGuard::new(100).unwrap());
-    }
+    // let mut guard: Option<pprof::ProfilerGuard> = None;
+    // if opts.profile {
+    //     guard = Some(pprof::ProfilerGuard::new(100).unwrap());
+    // }
 
     let render_config = RenderConfig::new(
         opts.image_width,
@@ -201,18 +200,18 @@ fn main() {
         }
     };
 
-    if let Some(g) = guard {
-        std::thread::sleep(std::time::Duration::from_secs(5));
-        match g.report().build() {
-            Ok(report) => {
-                let file = File::create("flamegraph.svg").unwrap();
-                report.flamegraph(file).unwrap();
+    // if let Some(g) = guard {
+    //     std::thread::sleep(std::time::Duration::from_secs(5));
+    //     match g.report().build() {
+    //         Ok(report) => {
+    //             let file = File::create("flamegraph.svg").unwrap();
+    //             report.flamegraph(file).unwrap();
 
-                println!("{:?}", report);
-            }
-            Err(_) => {}
-        };
-    }
+    //             println!("{:?}", report);
+    //         }
+    //         Err(_) => {}
+    //     };
+    // }
 }
 
 fn enable_logging(opts: &MainOptions) {
