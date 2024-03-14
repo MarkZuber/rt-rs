@@ -7,15 +7,15 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug executable 'rtgui'",
+      "name": "Debug executable 'rayimgui'",
       "cargo": {
-        "args": ["build", "--bin=rtgui", "--package=rtgui"],
+        "args": ["build", "--bin=rayimgui", "--package=rayimgui"],
         "filter": {
-          "name": "rtgui",
+          "name": "rayimgui",
           "kind": "bin"
         }
       },
-      "args": ["nff", "balls1"],
+      "args": ["--samples", "1", "spheres"],
       "cwd": "${workspaceFolder}"
     },
     {

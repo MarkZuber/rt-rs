@@ -1,7 +1,3 @@
 [workspace]
 
-members = [
-    "rtgui",
-    "rtlib",
-    "scenes",
-]
+members = ["rayimgui", "rtgui", "rtlib", "scenes"]
