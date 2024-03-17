@@ -158,26 +158,6 @@ impl Inner {
                     .apply_gamma(); // todo: adopt anyhow here for error handling
 
                 self.pixel_tx.send(Pixel::new(x, y, final_color)).unwrap();
-
-                /*
-                if self.is_red {
-                    self.pixel_tx
-                        .send(Pixel::new(
-                            x,
-                            y,
-                            Color::new(
-                                y_end as f32 / self.height as f32,
-                                0.0,
-                                x as f32 / self.width as f32,
-                            ),
-                        ))
-                        .unwrap();
-                } else {
-                    self.pixel_tx
-                        .send(Pixel::new(x, y, Color::new(0.0, 0.0, 1.0)))
-                        .unwrap();
-                }
-                */
             }
         }
     }
