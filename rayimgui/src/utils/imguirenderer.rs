@@ -16,7 +16,6 @@ use rayon::prelude::{IntoParallelIterator, ParallelIterator};
 struct Inner {
     width: u32,
     height: u32,
-    is_red: bool,
     pixel_tx: Sender<Pixel>,
     stop_requested: Arc<AtomicBool>, // arc so we can clone it into the subthreads doing the rendering
 }
@@ -26,11 +25,10 @@ pub struct ImguiRenderer {
 }
 
 impl ImguiRenderer {
-    pub fn new(width: u32, height: u32, pixel_tx: Sender<Pixel>, is_red: bool) -> Self {
+    pub fn new(width: u32, height: u32, pixel_tx: Sender<Pixel>) -> Self {
         let inner = Inner {
             width,
             height,
-            is_red,
             pixel_tx,
             stop_requested: Arc::new(AtomicBool::new(false)),
         };

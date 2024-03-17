@@ -128,11 +128,8 @@ fn main() {
     let width: u32 = 500;
     let height: u32 = 500;
 
-    // TODO: create the send/recv channels here, send the receiver into TextureUi and the sender into RayTraceRenderer (so it can spawn threads to send pixel data)
-    let mut is_red: bool = true;
-
     let (send, recv) = channel::<Pixel>();
-    let renderer = ImguiRenderer::new(width, height, send, true);
+    let renderer = ImguiRenderer::new(width, height, send);
     let mut tracer_ui = TextureUi::new(&gl, &mut textures, width, height, recv);
 
     renderer.start_ex(render_config, scene_generator);
@@ -181,9 +178,7 @@ fn main() {
                         .position([winxpos, 0.0], Condition::FirstUseEver)
                         .size([300.0, winyheight], Condition::FirstUseEver)
                         .build(|| {
-                            if ui.button("Render") {
-                                is_red = !is_red;
-                            }
+                            if ui.button("Render") {}
                             ui.text(format!("FPS: ({})", 1.0 / delta_time));
                         });
 
